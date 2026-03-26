@@ -6,13 +6,13 @@
 body {
     margin: 0;
     padding: 0;
-    background: radial-gradient(circle at center, #001a1a 0%, #000505 100%) no-repeat fixed;
-    overflow: hidden;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    color: white;
-    min-height: 100vh;
-    width: 100%;
-    -webkit-font-smoothing: antialiased;
+    width: 100vw;
+    height: 100vh;
+    /* Esto es clave: evita el scroll accidental */
+    overflow: hidden; 
+    position: fixed; 
+    top: 0;
+    left: 0;
 }
 
 /* --- 2. CAPAS DEL JARDÍN --- */
