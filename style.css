@@ -1,32 +1,57 @@
-/* --- 1. ESTRUCTURA BASE Y RESET --- */
+/* --- 1. ESTRUCTURA BASE Y RESET TOTAL --- */
 * {
     box-sizing: border-box;
 }
 
-body {
+html, body {
     margin: 0;
     padding: 0;
-    width: 100vw;
-    height: 100vh;
-    /* Esto es clave: evita el scroll accidental */
-    overflow: hidden; 
+    width: 100%;
+    height: 100%;
+    /* Bloqueo total de scroll */
+    overflow: hidden !important; 
     position: fixed; 
     top: 0;
     left: 0;
+    /* Evita el "pull-to-refresh" y rebotes en móviles */
+    overscroll-behavior: none; 
+    /* Fondo de seguridad por si falla el gradiente */
+    background-color: #000505;
 }
 
-/* --- 2. CAPAS DEL JARDÍN --- */
+body {
+    /* Gradiente corregido con attachment fixed y cover */
+    background: radial-gradient(circle at center, #001a1a 0%, #000505 100%) no-repeat center center fixed !important;
+    background-size: cover !important;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: white;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* --- 2. CAPAS DEL JARDÍN (Estabilizadas) --- */
 .garden, #garden-fondo, #garden-frente {
     position: absolute;
-    width: 100%;
-    height: 100%;
+    width: 100vw;
+    height: 100vh;
     top: 0;
     left: 0;
-    overflow: hidden; /* Corta cualquier cosa que sobresalga */
+    overflow: hidden !important;
     pointer-events: none;
+    z-index: 5;
 }
 
-/* --- 3. ELEMENTOS DINÁMICOS (LUCIÉRNAGAS Y PÉTALOS) --- */
+#garden-fondo {
+    z-index: 1; /* Fondo real */
+    filter: blur(2px) brightness(0.6);
+}
+
+#garden-frente {
+    z-index: 20;
+    bottom: -100%;
+    transition: bottom 3s ease-out;
+}
+
+/* --- 3. ELEMENTOS DINÁMICOS --- */
 .enjambre-wrapper {
     position: absolute;
     left: 50%;
@@ -172,12 +197,12 @@ body {
     font-style: italic;
 }
 
-/* --- 6. SISTEMA DE CHAT --- */
+/* --- 6. SISTEMA DE CHAT (Fijo para evitar saltos) --- */
 .chat-container {
-    position: fixed; /* Mejor fixed para evitar saltos */
-    bottom: 20px;
+    position: fixed;
+    bottom: 5vh;
     left: 50%;
-    transform: translate(-50%, 30px);
+    transform: translate(-50%, 0);
     width: 90%;
     max-width: 400px;
     background: rgba(0, 25, 25, 0.9);
@@ -199,18 +224,21 @@ body {
 }
 
 #historial-chat {
-    max-height: 220px;
+    max-height: 25vh;
     overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
     display: flex;
     flex-direction: column;
     gap: 10px;
     margin-bottom: 15px;
-    padding-right: 5px;
+    padding-right: 8px;
 }
 
 /* Scrollbar personalizado */
 #historial-chat::-webkit-scrollbar { width: 4px; }
-#historial-chat::-webkit-scrollbar-thumb { background: rgba(255, 202, 40, 0.4); border-radius: 10px; }
+#historial-chat::-webkit-scrollbar-thumb { background: rgba(255, 202, 40, 0.6); border-radius: 10px; }
+#historial-chat::-webkit-scrollbar-track { background: transparent; }
 
 .burbuja { 
     padding: 10px 16px; 
@@ -265,18 +293,9 @@ body {
     transition: transform 0.2s;
 }
 
-.btn-send { 
-    background: #ffca28; 
-    border-radius: 50%; 
-    color: #000;
-}
-
+.btn-send { background: #ffca28; border-radius: 50%; color: #000; }
 .btn-send:hover { transform: scale(1.1); }
-
-.btn-audio.grabando { 
-    color: #ff4b2b; 
-    animation: latido 1.2s infinite; 
-}
+.btn-audio.grabando { color: #ff4b2b; animation: latido 1.2s infinite; }
 
 @keyframes latido {
     0%, 100% { transform: scale(1); opacity: 1; }
@@ -297,5 +316,6 @@ audio {
     .titulo { font-size: 1.4rem; margin-top: 25px; }
     .poema { top: 90px; padding: 18px; width: 90%; }
     #texto-poema { font-size: 0.95rem; }
-    .chat-container { bottom: 15px; width: 92%; }
+    /* Evitamos que el chat suba demasiado al salir el teclado */
+    .chat-container { bottom: 20px; width: 92%; }
 }
