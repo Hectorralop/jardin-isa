@@ -1,4 +1,4 @@
-// --- CONFIGURACIÓN ---
+// --- 1. CONFIGURACIÓN ---
 const AIRTABLE_API_KEY = 'patfQuYvWIBgZQObG.ee885ffe8950f275cf67e985a15f2cf5a481589c0a7d16b20de0bcbe890af137'; 
 const BASE_ID = 'app8CeyMQkqYjFulz';
 const TABLA_MENSAJE_DIARIO = 'mensajes'; 
@@ -18,7 +18,7 @@ const floresInfo = [
     { src: 'amapolas.png', h: 130 }      
 ];
 
-// 1. INICIO
+// --- 2. INICIO Y CONTROL DE INTERFAZ ---
 function iniciarRegalo() {
     const overlay = document.getElementById('overlay');
     const musica = document.getElementById('musica');
@@ -26,35 +26,37 @@ function iniciarRegalo() {
     if (overlay) {
         overlay.style.opacity = '0';
         overlay.style.pointerEvents = 'none';
-        setTimeout(() => overlay.style.display = 'none', 600);
+        setTimeout(() => overlay.style.display = 'none', 800);
     }
 
-    if (musica) musica.play().catch(() => {});
+    if (musica) musica.play().catch(() => console.log("Interacción requerida para audio"));
 
     crearLuciernagasFondo();
     construirRamo();
     
-    // Generación de pétalos optimizada
-    setInterval(() => { if (!document.hidden) crearPetalo(); }, 800);
+    // Generación de pétalos (Optimizado para no saturar)
+    setInterval(() => { 
+        if (!document.hidden) crearPetalo(); 
+    }, 1200);
 
     setTimeout(() => {
         if(gardenFrente) gardenFrente.style.bottom = '0';
         escribirPoema(); 
-    }, 400);
+    }, 500);
 }
 
-// 2. CONSTRUCCIÓN DEL JARDÍN (CORREGIDA)
+// --- 3. CONSTRUCCIÓN DEL JARDÍN ---
 function construirRamo() {
     const cont = document.getElementById('garden-frente');
     if (!cont) return;
 
-    // ELIMINAR SOLO FLORES PREVIAS (Para no borrar el Chat/Poema si están dentro)
+    // Limpiar solo elementos decorativos previos
     const elementosPrevios = cont.querySelectorAll('.flower-img, .enjambre-wrapper');
     elementosPrevios.forEach(el => el.remove());
 
     const fragmento = document.createDocumentFragment();
     
-    // Posiciones de las flores principales
+    // Distribución de flores
     crearFlorImagen(fragmento, floresInfo[1], 15, 20, 0.5, -20, 5);
     crearFlorImagen(fragmento, floresInfo[2], 85, 30, 0.8, 20, 5);
     crearEnjambreCorazon(fragmento);
@@ -62,7 +64,7 @@ function construirRamo() {
     crearFlorImagen(fragmento, floresInfo[0], 60, 15, 0.7, 8, 10);
     crearFlorImagen(fragmento, floresInfo[0], 50, 60, 0, 0, 15);
     
-    // Fila inferior de amapolas
+    // Fila inferior
     [15, 32, 50, 68, 85].forEach((pos, i) => {
         crearFlorImagen(fragmento, floresInfo[3], pos, 10, i * 0.1, 0, 20);
     });
@@ -74,7 +76,7 @@ function crearFlorImagen(cont, info, x, hAdj, delay, ang, z) {
     const img = document.createElement('img');
     img.src = info.src;
     img.className = 'flower-img';
-    img.style.cssText = `left:${x}%; height:${info.h + hAdj}px; z-index:${z}; transform: translateX(-50%) rotate(${ang}deg); animation-delay:${delay}s; opacity:0;`;
+    img.style.cssText = `left:${x}%; height:${info.h + hAdj}px; z-index:${z}; transform: translateX(-50%) rotate(${ang}deg); animation-delay:${delay}s;`;
     img.onload = () => img.style.opacity = '1';
     cont.appendChild(img);
 }
@@ -82,7 +84,7 @@ function crearFlorImagen(cont, info, x, hAdj, delay, ang, z) {
 function crearEnjambreCorazon(contenedor) {
     const wrapper = document.createElement('div');
     wrapper.className = 'enjambre-wrapper';
-    const cant = window.innerWidth < 600 ? 45 : 80; 
+    const cant = window.innerWidth < 600 ? 40 : 70; 
     
     for (let i = 0; i < cant; i++) {
         const p = document.createElement('div');
@@ -90,23 +92,23 @@ function crearEnjambreCorazon(contenedor) {
         const t = (i / cant) * (2 * Math.PI);
         const x = 16 * Math.pow(Math.sin(t), 3);
         const y = -(13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t));
-        p.style.left = (x * 7) + 'px';
-        p.style.top = (y * 7) + 'px';
+        p.style.left = (x * 6.5) + 'px';
+        p.style.top = (y * 6.5) + 'px';
         p.style.animationDelay = (Math.random() * 3) + 's';
         wrapper.appendChild(p);
     }
     contenedor.appendChild(wrapper);
 }
 
-// 3. EFECTOS AMBIENTALES
+// --- 4. EFECTOS AMBIENTALES ---
 function crearLuciernagasFondo() {
     if (!gardenFondo) return;
-    for (let i = 0; i < 15; i++) {
+    for (let i = 0; i < 12; i++) {
         const f = document.createElement('div');
         f.className = 'firefly';
         f.style.left = Math.random() * 100 + 'vw';
         f.style.top = Math.random() * 100 + 'vh';
-        f.style.animationDuration = (Math.random() * 4 + 4) + 's';
+        f.style.animationDuration = (Math.random() * 4 + 5) + 's';
         gardenFondo.appendChild(f);
     }
 }
@@ -116,22 +118,21 @@ function crearPetalo() {
     const p = document.createElement('div');
     p.className = 'fall';
     p.style.left = Math.random() * 100 + 'vw';
-    const colores = ['#ffb6c1', '#ffd1dc', '#fff176'];
+    const colores = ['#ffb6c1', '#ffd1dc', '#fff176', '#ffffff'];
     p.style.background = colores[Math.floor(Math.random() * colores.length)];
-    const dur = Math.random() * 3 + 5;
+    const dur = Math.random() * 4 + 6;
     p.style.animationDuration = dur + 's';
     gardenFondo.appendChild(p);
     setTimeout(() => p.remove(), dur * 1000);
 }
 
-// 4. CARTA DIARIA (CORREGIDA)
+// --- 5. CARTA DIARIA ---
 async function escribirPoema() {
     const cont = document.getElementById('texto-poema');
     const cajaCarta = document.querySelector('.poema');
     if (!cont || !cajaCarta) return;
 
     cajaCarta.classList.add('visible');
-    cajaCarta.style.opacity = "1";
 
     try {
         const hoy = new Date().toISOString().split('T')[0];
@@ -150,22 +151,21 @@ async function escribirPoema() {
             if (i < texto.length) {
                 cont.innerHTML += (texto[i] === "\n" || texto[i] === "\r") ? "<br>" : texto[i];
                 i++;
-                setTimeout(type, 50);
+                setTimeout(type, 55);
             }
         }
         type();
     } catch (e) {
-        console.error("Error cargando poema:", e);
         cont.innerHTML = "Eres mi jardín favorito. ✨💘";
     }
 }
 
-// 5. CHAT Y MENSAJES
+// --- 6. CHAT Y MENSAJES (CORREGIDO PARA MÓVILES) ---
 async function cargarChat() {
     try {
         const hoy = new Date().toISOString().split('T')[0];
         const filtro = `IS_SAME({Fecha}, '${hoy}', 'day')`;
-        const url = `https://api.airtable.com/v0/${BASE_ID}/${TABLA_CHAT}?filterByFormula=${encodeURIComponent(filtro)}&sort%5B0%5D%5Bfield%5D=Fecha&sort%5B0%5D%5Bdirection%5D=asc`;
+        const url = `https://api.airtable.com/v0/${BASE_ID}/${TABLA_CHAT}?filterByFormula=${encodeURIComponent(filtro)}&sort[0][field]=Fecha&sort[0][direction]=asc`;
 
         const response = await fetch(url, { headers: { Authorization: `Bearer ${AIRTABLE_API_KEY}` } });
         const data = await response.json();
@@ -175,21 +175,29 @@ async function cargarChat() {
         historial.innerHTML = '';
 
         if (!data.records || data.records.length === 0) {
-            historial.innerHTML = '<div style="text-align:center; color:rgba(255,255,255,0.4); font-size:0.8rem; margin-top:20px;">Nuestra historia comienza... ✨</div>';
+            historial.innerHTML = '<div style="text-align:center; color:rgba(255,255,255,0.3); font-size:0.8rem; margin-top:20px;">Escribe algo especial... ✨</div>';
         } else {
             data.records.forEach(reg => {
                 const div = document.createElement('div');
                 div.className = `burbuja ${reg.fields.Nombre === "El" ? "el" : "ella"}`;
+                
                 if (reg.fields.AudioUrl) {
-                    div.innerHTML = `<audio controls src="${reg.fields.AudioUrl}"></audio>`;
+                    const audioEle = document.createElement('audio');
+                    audioEle.src = reg.fields.AudioUrl;
+                    audioEle.controls = true;
+                    audioEle.preload = "metadata";
+                    div.appendChild(audioEle);
                 } else {
                     div.innerText = reg.fields.Mensaje;
                 }
                 historial.appendChild(div);
             });
         }
-        historial.scrollTop = historial.scrollHeight;
-    } catch (e) { console.error("Error cargando chat:", e); }
+        // Scroll automático suave
+        setTimeout(() => {
+            historial.scrollTo({ top: historial.scrollHeight, behavior: 'smooth' });
+        }, 150);
+    } catch (e) { console.error("Error chat:", e); }
 }
 
 function revelarChat() {
@@ -201,7 +209,10 @@ function revelarChat() {
         setTimeout(() => chatObj.style.display = 'none', 500);
     } else {
         chatObj.style.display = 'block';
-        setTimeout(() => { chatObj.classList.add('mostrar'); cargarChat(); }, 50);
+        setTimeout(() => { 
+            chatObj.classList.add('mostrar'); 
+            cargarChat(); 
+        }, 50);
     }
 }
 
@@ -215,7 +226,7 @@ async function enviarMensajeFinal(texto, urlAudio = null) {
             })
         });
         cargarChat();
-    } catch (e) { console.error("Error al enviar:", e); }
+    } catch (e) { console.error("Error envío:", e); }
 }
 
 function enviarMensaje() {
@@ -225,12 +236,13 @@ function enviarMensaje() {
     input.value = '';
 }
 
-// 6. AUDIO Y GRABACIÓN
+// --- 7. AUDIO Y GRABACIÓN (ESTABILIZADO) ---
 if (btnRecord) {
+    // Soporte para PC y Móvil
     btnRecord.addEventListener('mousedown', iniciarGrabacion);
     btnRecord.addEventListener('mouseup', detenerGrabacion);
-    btnRecord.addEventListener('touchstart', (e) => { e.preventDefault(); iniciarGrabacion(); });
-    btnRecord.addEventListener('touchend', (e) => { e.preventDefault(); detenerGrabacion(); });
+    btnRecord.addEventListener('touchstart', (e) => { e.preventDefault(); iniciarGrabacion(); }, {passive: false});
+    btnRecord.addEventListener('touchend', (e) => { e.preventDefault(); detenerGrabacion(); }, {passive: false});
 }
 
 async function iniciarGrabacion() {
@@ -241,7 +253,10 @@ async function iniciarGrabacion() {
         segundos = 0;
         
         const timerLabel = document.getElementById('timer-grabacion');
-        if (timerLabel) { timerLabel.innerText = "00:00"; timerLabel.style.display = "inline"; }
+        if (timerLabel) { 
+            timerLabel.innerText = "00:00"; 
+            timerLabel.style.display = "inline"; 
+        }
         
         timerInterval = setInterval(() => {
             segundos++;
@@ -254,7 +269,9 @@ async function iniciarGrabacion() {
         mediaRecorder.onstop = subirAudioACloudinary;
         mediaRecorder.start();
         btnRecord.classList.add('grabando');
-    } catch (err) { alert("Permite el uso del micrófono para grabar."); }
+    } catch (err) { 
+        alert("Microfono no disponible o denegado."); 
+    }
 }
 
 function detenerGrabacion() {
@@ -273,15 +290,17 @@ async function subirAudioACloudinary() {
     const formData = new FormData();
     formData.append('file', audioBlob);
     formData.append('upload_preset', CLOUDINARY_PRESET);
-    btnRecord.innerText = "⏳";
+    
+    const iconOriginal = btnRecord.innerHTML;
+    btnRecord.innerHTML = "⏳";
 
     try {
         const resp = await fetch(CLOUDINARY_URL, { method: 'POST', body: formData });
         const data = await resp.json();
         if (data.secure_url) await enviarMensajeFinal(null, data.secure_url);
-        btnRecord.innerText = "🎤";
+        btnRecord.innerHTML = iconOriginal;
     } catch (err) { 
-        btnRecord.innerText = "❌"; 
-        setTimeout(()=>btnRecord.innerText="🎤", 1000); 
+        btnRecord.innerHTML = "❌"; 
+        setTimeout(() => btnRecord.innerHTML = iconOriginal, 2000); 
     }
-}   
+}
