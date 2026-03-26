@@ -120,7 +120,7 @@ function crearPetalo() {
     setTimeout(() => p.remove(), dur * 1000);
 }
 
-// --- 5. CARTA DIARIA ---
+// --- 5. CARTA DIARIA (CORREGIDO CON SCROLL AUTOMÁTICO) ---
 async function escribirPoema() {
     const cont = document.getElementById('texto-poema');
     const cajaCarta = document.querySelector('.poema');
@@ -139,8 +139,14 @@ async function escribirPoema() {
         let i = 0;
         function type() {
             if (i < texto.length) {
+                // Insertamos letra o salto de línea
                 cont.innerHTML += (texto[i] === "\n" || texto[i] === "\r") ? "<br>" : texto[i];
                 i++;
+
+                // Lógica de Scroll Automático:
+                // Movemos el scroll del contenedor (.poema) al máximo de su altura actual
+                cajaCarta.scrollTop = cajaCarta.scrollHeight;
+
                 setTimeout(type, 55);
             }
         }
@@ -148,7 +154,7 @@ async function escribirPoema() {
     } catch (e) { cont.innerHTML = "Eres mi jardín favorito. ✨💘"; }
 }
 
-// --- 6. CHAT Y MENSAJES (CORREGIDO CON CONTROL DE VOLUMEN) ---
+// --- 6. CHAT Y MENSAJES ---
 async function cargarChat() {
     try {
         const hoy = new Date().toISOString().split('T')[0];
@@ -158,7 +164,7 @@ async function cargarChat() {
         const response = await fetch(url, { headers: { Authorization: `Bearer ${AIRTABLE_API_KEY}` } });
         const data = await response.json();
         const historial = document.getElementById('historial-chat');
-        const musicaFondo = document.getElementById('musica'); // Referencia para el volumen
+        const musicaFondo = document.getElementById('musica'); 
         
         if (!historial) return;
         historial.innerHTML = '';
@@ -178,7 +184,6 @@ async function cargarChat() {
                     audioEle.style.width = "100%";
                     audioEle.style.display = "block";
 
-                    // Lógica para bajar la música de fondo al reproducir
                     audioEle.onplay = () => { if (musicaFondo) suavizarVolumen(musicaFondo, 0.1); };
                     audioEle.onpause = () => { if (musicaFondo) suavizarVolumen(musicaFondo, 1.0); };
                     audioEle.onended = () => { if (musicaFondo) suavizarVolumen(musicaFondo, 1.0); };
