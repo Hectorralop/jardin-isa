@@ -16,27 +16,14 @@ body {
 }
 
 /* --- 2. CAPAS DEL JARDÍN --- */
-.garden {
+.garden, #garden-fondo, #garden-frente {
     position: absolute;
     width: 100%;
-    height: 100vh;
+    height: 100%;
     top: 0;
     left: 0;
-    pointer-events: none; /* Para que no bloqueen clics en la interfaz */
-}
-
-#garden-fondo {
-    z-index: 5;
-    filter: blur(2px) brightness(0.5);
-}
-
-#garden-frente {
-    z-index: 20;
-    position: absolute;
-    width: 100%;
-    bottom: -100%; /* Se anima con JS */
-    height: 100vh;
-    transition: bottom 3s ease-out;
+    overflow: hidden; /* Corta cualquier cosa que sobresalga */
+    pointer-events: none;
 }
 
 /* --- 3. ELEMENTOS DINÁMICOS (LUCIÉRNAGAS Y PÉTALOS) --- */
@@ -188,7 +175,7 @@ body {
 /* --- 6. SISTEMA DE CHAT --- */
 .chat-container {
     position: fixed; /* Mejor fixed para evitar saltos */
-    bottom: 25px;
+    bottom: 20px;
     left: 50%;
     transform: translate(-50%, 30px);
     width: 90%;
