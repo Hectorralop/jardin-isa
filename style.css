@@ -1,6 +1,7 @@
 /* --- 1. ESTRUCTURA BASE Y RESET TOTAL --- */
 * {
     box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent; /* Quita el destello azul al tocar en móviles */
 }
 
 html, body {
@@ -8,27 +9,25 @@ html, body {
     padding: 0;
     width: 100%;
     height: 100%;
-    /* Bloqueo total de scroll */
+    /* Bloqueo total de scroll y rebote */
     overflow: hidden !important; 
     position: fixed; 
     top: 0;
     left: 0;
-    /* Evita el "pull-to-refresh" y rebotes en móviles */
     overscroll-behavior: none; 
-    /* Fondo de seguridad por si falla el gradiente */
-    background-color: #000505;
+    background-color: #000505; /* Fondo de seguridad */
 }
 
 body {
-    /* Gradiente corregido con attachment fixed y cover */
+    /* Gradiente optimizado */
     background: radial-gradient(circle at center, #001a1a 0%, #000505 100%) no-repeat center center fixed !important;
     background-size: cover !important;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
     color: white;
     -webkit-font-smoothing: antialiased;
 }
 
-/* --- 2. CAPAS DEL JARDÍN (Estabilizadas) --- */
+/* --- 2. CAPAS DEL JARDÍN --- */
 .garden, #garden-fondo, #garden-frente {
     position: absolute;
     width: 100vw;
@@ -37,18 +36,17 @@ body {
     left: 0;
     overflow: hidden !important;
     pointer-events: none;
-    z-index: 5;
 }
 
 #garden-fondo {
-    z-index: 1; /* Fondo real */
-    filter: blur(2px) brightness(0.6);
+    z-index: 1;
+    filter: blur(1px) brightness(0.7);
 }
 
 #garden-frente {
     z-index: 20;
-    bottom: -100%;
-    transition: bottom 3s ease-out;
+    bottom: -100%; /* Inicia abajo para la animación de subida */
+    transition: bottom 3s cubic-bezier(0.25, 0.1, 0.25, 1);
 }
 
 /* --- 3. ELEMENTOS DINÁMICOS --- */
@@ -145,10 +143,10 @@ body {
     cursor: pointer;
     box-shadow: 0 0 25px rgba(255, 202, 40, 0.6);
     font-weight: bold;
-    transition: transform 0.3s, box-shadow 0.3s;
+    transition: all 0.3s ease;
 }
 
-#overlay button:hover { transform: scale(1.1); box-shadow: 0 0 35px #ffca28; }
+#overlay button:active { transform: scale(0.95); }
 
 .titulo {
     text-align: center;
@@ -173,16 +171,16 @@ body {
     width: 85%;
     max-width: 420px;
     padding: 25px;
-    background: rgba(0, 20, 20, 0.75);
+    background: rgba(0, 20, 20, 0.8);
     border-radius: 20px;
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
     text-align: center;
     z-index: 150;
-    border: 1px solid rgba(255, 202, 40, 0.25);
+    border: 1px solid rgba(255, 202, 40, 0.3);
     opacity: 0;
     visibility: hidden;
-    transition: opacity 1.5s ease, visibility 1.5s;
+    transition: opacity 1.5s ease;
 }
 
 .poema.visible { 
@@ -197,7 +195,7 @@ body {
     font-style: italic;
 }
 
-/* --- 6. SISTEMA DE CHAT (Fijo para evitar saltos) --- */
+/* --- 6. SISTEMA DE CHAT --- */
 .chat-container {
     position: fixed;
     bottom: 5vh;
@@ -205,22 +203,21 @@ body {
     transform: translate(-50%, 0);
     width: 90%;
     max-width: 400px;
-    background: rgba(0, 25, 25, 0.9);
-    backdrop-filter: blur(15px);
-    -webkit-backdrop-filter: blur(15px);
+    background: rgba(0, 25, 25, 0.95);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
     border-radius: 24px;
     padding: 15px;
     z-index: 200;
-    border: 1px solid rgba(255, 202, 40, 0.3);
+    border: 1px solid rgba(255, 202, 40, 0.4);
     display: none;
     opacity: 0;
-    transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 .chat-container.mostrar { 
     display: block; 
     opacity: 1; 
-    transform: translate(-50%, 0); 
 }
 
 #historial-chat {
@@ -230,37 +227,25 @@ body {
     -webkit-overflow-scrolling: touch;
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 12px;
     margin-bottom: 15px;
     padding-right: 8px;
 }
 
-/* Scrollbar personalizado */
+/* Scrollbar */
 #historial-chat::-webkit-scrollbar { width: 4px; }
 #historial-chat::-webkit-scrollbar-thumb { background: rgba(255, 202, 40, 0.6); border-radius: 10px; }
-#historial-chat::-webkit-scrollbar-track { background: transparent; }
 
 .burbuja { 
-    padding: 10px 16px; 
+    padding: 12px 16px; 
     border-radius: 18px; 
-    font-size: 0.9rem; 
+    font-size: 0.95rem; 
     max-width: 85%; 
-    line-height: 1.4;
+    word-wrap: break-word;
 }
 
-.burbuja.el { 
-    align-self: flex-end; 
-    background: #ffca28; 
-    color: #000; 
-    border-bottom-right-radius: 4px; 
-}
-
-.burbuja.ella { 
-    align-self: flex-start; 
-    background: rgba(255, 255, 255, 0.95); 
-    color: #111; 
-    border-bottom-left-radius: 4px; 
-}
+.burbuja.el { align-self: flex-end; background: #ffca28; color: #000; border-bottom-right-radius: 4px; }
+.burbuja.ella { align-self: flex-start; background: rgba(255, 255, 255, 0.95); color: #111; border-bottom-left-radius: 4px; }
 
 /* --- 7. INPUTS Y CONTROLES --- */
 .input-area { 
@@ -268,7 +253,7 @@ body {
     align-items: center; 
     gap: 10px; 
     padding: 8px 12px; 
-    background: rgba(255, 255, 255, 0.08); 
+    background: rgba(255, 255, 255, 0.1); 
     border-radius: 30px; 
 }
 
@@ -278,44 +263,44 @@ body {
     border: none; 
     color: white; 
     outline: none; 
-    font-size: 0.95rem; 
+    font-size: 1rem; 
 }
 
 .btn-audio, .btn-send { 
-    width: 38px; 
-    height: 38px; 
+    width: 40px; 
+    height: 40px; 
     border: none; 
     background: none; 
     cursor: pointer; 
     display: flex; 
     align-items: center; 
     justify-content: center; 
-    transition: transform 0.2s;
 }
 
 .btn-send { background: #ffca28; border-radius: 50%; color: #000; }
-.btn-send:hover { transform: scale(1.1); }
 .btn-audio.grabando { color: #ff4b2b; animation: latido 1.2s infinite; }
 
 @keyframes latido {
-    0%, 100% { transform: scale(1); opacity: 1; }
-    50% { transform: scale(1.3); opacity: 0.7; }
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.3); }
 }
 
+/* Estilo de Audio Corregido para Móviles */
 audio { 
     width: 100%; 
-    max-width: 180px; 
-    height: 30px; 
+    min-width: 180px;
+    height: 35px; 
     filter: invert(100%) hue-rotate(180deg) brightness(1.8); 
     margin-top: 5px;
+    display: block;
 }
 
 /* --- 8. RESPONSIVE --- */
 @media (max-width: 600px) {
-    .flower-img { max-width: 35vw !important; }
-    .titulo { font-size: 1.4rem; margin-top: 25px; }
-    .poema { top: 90px; padding: 18px; width: 90%; }
+    .flower-img { max-width: 38vw !important; }
+    .titulo { font-size: 1.5rem; margin-top: 20px; }
+    .poema { top: 100px; padding: 20px; width: 90%; }
     #texto-poema { font-size: 0.95rem; }
-    /* Evitamos que el chat suba demasiado al salir el teclado */
-    .chat-container { bottom: 20px; width: 92%; }
+    .chat-container { bottom: 20px; width: 94%; }
+    #historial-chat { max-height: 30vh; }
 }
