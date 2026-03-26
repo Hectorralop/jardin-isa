@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Para ti ❤️</title>
+    <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/833/833472.png">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="overlay">
+    <button onclick="iniciarRegalo()">Abrir Regalo 🎁</button>
+</div>
+
+<div id="garden-fondo" class="garden"></div>
+
+<div id="garden-frente" class="garden"></div>
+
+<div class="titulo">
+    Para ti, <span class="nombre">Mi Amor</span> 
+    <span id="corazon-secreto" onclick="revelarChat()" style="cursor: pointer;">❤️</span>
+</div>
+
+<div class="poema">
+    <div id="texto-poema"></div>
+</div>
+
+<div class="chat-container">
+    <div class="chat-header">
+        Nuestro Rincón ✨
+        <span class="cerrar-chat" onclick="cerrarChat()" style="cursor:pointer;">×</span>
+    </div>
+    
+    <div id="historial-chat"></div>
+
+<div class="input-area">
+    <input type="text" id="nuevo-mensaje" placeholder="Escribe algo..." 
+           onkeypress="if(event.key === 'Enter') enviarMensaje()">
+    
+    <span id="timer-grabacion" style="display:none;">00:00</span>
+    
+    <button id="btn-record" class="btn-audio">🎤</button> 
+    
+    <button onclick="enviarMensaje()" class="btn-send">
+        <svg viewBox="0 0 24 24" style="width:20px; fill:currentColor;"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"></path></svg>
+    </button>
+</div>
+</div>
+<audio id="musica" loop>
+    <source src="cancion.mp3" type="audio/mpeg">
+</audio>
+<script src="script.js"></script>
+</body>
+</html>
