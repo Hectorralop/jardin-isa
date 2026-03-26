@@ -29,15 +29,13 @@ function iniciarRegalo() {
         setTimeout(() => overlay.style.display = 'none', 800);
     }
 
-    if (musica) musica.play().catch(() => console.log("Interacción requerida para audio"));
+    if (musica) musica.play().catch(() => console.log("Clic para audio necesario"));
 
     crearLuciernagasFondo();
     construirRamo();
     
-    // Generación de pétalos (Optimizado para no saturar)
-    setInterval(() => { 
-        if (!document.hidden) crearPetalo(); 
-    }, 1200);
+    // Generación de pétalos optimizada
+    setInterval(() => { if (!document.hidden) crearPetalo(); }, 1200);
 
     setTimeout(() => {
         if(gardenFrente) gardenFrente.style.bottom = '0';
@@ -50,13 +48,11 @@ function construirRamo() {
     const cont = document.getElementById('garden-frente');
     if (!cont) return;
 
-    // Limpiar solo elementos decorativos previos
     const elementosPrevios = cont.querySelectorAll('.flower-img, .enjambre-wrapper');
     elementosPrevios.forEach(el => el.remove());
 
     const fragmento = document.createDocumentFragment();
     
-    // Distribución de flores
     crearFlorImagen(fragmento, floresInfo[1], 15, 20, 0.5, -20, 5);
     crearFlorImagen(fragmento, floresInfo[2], 85, 30, 0.8, 20, 5);
     crearEnjambreCorazon(fragmento);
@@ -64,7 +60,6 @@ function construirRamo() {
     crearFlorImagen(fragmento, floresInfo[0], 60, 15, 0.7, 8, 10);
     crearFlorImagen(fragmento, floresInfo[0], 50, 60, 0, 0, 15);
     
-    // Fila inferior
     [15, 32, 50, 68, 85].forEach((pos, i) => {
         crearFlorImagen(fragmento, floresInfo[3], pos, 10, i * 0.1, 0, 20);
     });
@@ -137,13 +132,9 @@ async function escribirPoema() {
     try {
         const hoy = new Date().toISOString().split('T')[0];
         const url = `https://api.airtable.com/v0/${BASE_ID}/${TABLA_MENSAJE_DIARIO}?filterByFormula=IS_SAME({Fecha},'${hoy}','day')`;
-        
         const response = await fetch(url, { headers: { Authorization: `Bearer ${AIRTABLE_API_KEY}` } });
         const data = await response.json();
-        
-        const texto = (data.records && data.records.length > 0) 
-                      ? data.records[0].fields.Contenido 
-                      : "Eres mi jardín favorito. ✨💘";
+        const texto = (data.records && data.records.length > 0) ? data.records[0].fields.Contenido : "Eres mi jardín favorito. ✨💘";
 
         cont.innerHTML = ""; 
         let i = 0;
@@ -155,12 +146,10 @@ async function escribirPoema() {
             }
         }
         type();
-    } catch (e) {
-        cont.innerHTML = "Eres mi jardín favorito. ✨💘";
-    }
+    } catch (e) { cont.innerHTML = "Eres mi jardín favorito. ✨💘"; }
 }
 
-// --- 6. CHAT Y MENSAJES (CORREGIDO PARA MÓVILES) ---
+// --- 6. CHAT Y MENSAJES (CORREGIDO PARA AUDIO) ---
 async function cargarChat() {
     try {
         const hoy = new Date().toISOString().split('T')[0];
@@ -186,6 +175,9 @@ async function cargarChat() {
                     audioEle.src = reg.fields.AudioUrl;
                     audioEle.controls = true;
                     audioEle.preload = "metadata";
+                    // Asegurar que el audio no rompa la burbuja
+                    audioEle.style.width = "100%";
+                    audioEle.style.display = "block";
                     div.appendChild(audioEle);
                 } else {
                     div.innerText = reg.fields.Mensaje;
@@ -193,10 +185,10 @@ async function cargarChat() {
                 historial.appendChild(div);
             });
         }
-        // Scroll automático suave
+        // Scroll automático suave corregido
         setTimeout(() => {
             historial.scrollTo({ top: historial.scrollHeight, behavior: 'smooth' });
-        }, 150);
+        }, 200);
     } catch (e) { console.error("Error chat:", e); }
 }
 
@@ -209,10 +201,7 @@ function revelarChat() {
         setTimeout(() => chatObj.style.display = 'none', 500);
     } else {
         chatObj.style.display = 'block';
-        setTimeout(() => { 
-            chatObj.classList.add('mostrar'); 
-            cargarChat(); 
-        }, 50);
+        setTimeout(() => { chatObj.classList.add('mostrar'); cargarChat(); }, 50);
     }
 }
 
@@ -236,9 +225,8 @@ function enviarMensaje() {
     input.value = '';
 }
 
-// --- 7. AUDIO Y GRABACIÓN (ESTABILIZADO) ---
+// --- 7. AUDIO Y GRABACIÓN ---
 if (btnRecord) {
-    // Soporte para PC y Móvil
     btnRecord.addEventListener('mousedown', iniciarGrabacion);
     btnRecord.addEventListener('mouseup', detenerGrabacion);
     btnRecord.addEventListener('touchstart', (e) => { e.preventDefault(); iniciarGrabacion(); }, {passive: false});
@@ -253,10 +241,7 @@ async function iniciarGrabacion() {
         segundos = 0;
         
         const timerLabel = document.getElementById('timer-grabacion');
-        if (timerLabel) { 
-            timerLabel.innerText = "00:00"; 
-            timerLabel.style.display = "inline"; 
-        }
+        if (timerLabel) { timerLabel.innerText = "00:00"; timerLabel.style.display = "inline"; }
         
         timerInterval = setInterval(() => {
             segundos++;
@@ -269,9 +254,7 @@ async function iniciarGrabacion() {
         mediaRecorder.onstop = subirAudioACloudinary;
         mediaRecorder.start();
         btnRecord.classList.add('grabando');
-    } catch (err) { 
-        alert("Microfono no disponible o denegado."); 
-    }
+    } catch (err) { alert("Micrófono no disponible."); }
 }
 
 function detenerGrabacion() {
