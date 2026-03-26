@@ -34,7 +34,6 @@ function iniciarRegalo() {
     crearLuciernagasFondo();
     construirRamo();
     
-    // Generación de pétalos optimizada
     setInterval(() => { if (!document.hidden) crearPetalo(); }, 1200);
 
     setTimeout(() => {
@@ -149,7 +148,7 @@ async function escribirPoema() {
     } catch (e) { cont.innerHTML = "Eres mi jardín favorito. ✨💘"; }
 }
 
-// --- 6. CHAT Y MENSAJES (CORREGIDO PARA AUDIO) ---
+// --- 6. CHAT Y MENSAJES (CORREGIDO CON CONTROL DE VOLUMEN) ---
 async function cargarChat() {
     try {
         const hoy = new Date().toISOString().split('T')[0];
@@ -159,8 +158,9 @@ async function cargarChat() {
         const response = await fetch(url, { headers: { Authorization: `Bearer ${AIRTABLE_API_KEY}` } });
         const data = await response.json();
         const historial = document.getElementById('historial-chat');
-        if (!historial) return;
+        const musicaFondo = document.getElementById('musica'); // Referencia para el volumen
         
+        if (!historial) return;
         historial.innerHTML = '';
 
         if (!data.records || data.records.length === 0) {
@@ -175,9 +175,14 @@ async function cargarChat() {
                     audioEle.src = reg.fields.AudioUrl;
                     audioEle.controls = true;
                     audioEle.preload = "metadata";
-                    // Asegurar que el audio no rompa la burbuja
                     audioEle.style.width = "100%";
                     audioEle.style.display = "block";
+
+                    // Lógica para bajar la música de fondo al reproducir
+                    audioEle.onplay = () => { if (musicaFondo) suavizarVolumen(musicaFondo, 0.1); };
+                    audioEle.onpause = () => { if (musicaFondo) suavizarVolumen(musicaFondo, 1.0); };
+                    audioEle.onended = () => { if (musicaFondo) suavizarVolumen(musicaFondo, 1.0); };
+
                     div.appendChild(audioEle);
                 } else {
                     div.innerText = reg.fields.Mensaje;
@@ -185,7 +190,6 @@ async function cargarChat() {
                 historial.appendChild(div);
             });
         }
-        // Scroll automático suave corregido
         setTimeout(() => {
             historial.scrollTo({ top: historial.scrollHeight, behavior: 'smooth' });
         }, 200);
@@ -286,4 +290,23 @@ async function subirAudioACloudinary() {
         btnRecord.innerHTML = "❌"; 
         setTimeout(() => btnRecord.innerHTML = iconOriginal, 2000); 
     }
+}
+
+// --- 8. FUNCIONES AUXILIARES ---
+function suavizarVolumen(elementoAudio, volumenObjetivo) {
+    const paso = 0.05; 
+    const intervalo = 50; 
+
+    let fade = setInterval(() => {
+        if (elementoAudio.volume < volumenObjetivo) {
+            elementoAudio.volume = Math.min(elementoAudio.volume + paso, volumenObjetivo);
+        } else {
+            elementoAudio.volume = Math.max(elementoAudio.volume - paso, volumenObjetivo);
+        }
+
+        if (Math.abs(elementoAudio.volume - volumenObjetivo) < 0.01) {
+            elementoAudio.volume = volumenObjetivo;
+            clearInterval(fade);
+        }
+    }, intervalo);
 }
