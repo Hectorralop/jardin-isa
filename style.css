@@ -157,7 +157,7 @@ body {
     text-shadow: 0 0 10px #ffca28;
 }
 
-/* --- 5. POEMA Y CARTA --- */
+/* --- 5. POEMA Y CARTA (CON SCROLL AUTOMÁTICO) --- */
 .poema {
     position: absolute;
     top: 130px; 
@@ -173,9 +173,22 @@ body {
     text-align: center;
     z-index: 150;
     border: 1px solid rgba(255, 202, 40, 0.3);
+    
+    /* Configuración de Scroll */
+    max-height: 45vh; 
+    overflow-y: auto; 
+    display: block;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE/Edge */
+    
     opacity: 0;
     visibility: hidden;
     transition: opacity 1.5s ease;
+}
+
+/* Ocultar barra en Chrome/Safari */
+.poema::-webkit-scrollbar {
+    display: none;
 }
 
 .poema.visible { 
@@ -188,9 +201,10 @@ body {
     font-size: 1.05rem; 
     line-height: 1.7; 
     font-style: italic;
+    padding-bottom: 20px;
 }
 
-/* --- 6. SISTEMA DE CHAT (CORRECCIÓN AUDIO) --- */
+/* --- 6. SISTEMA DE CHAT --- */
 .chat-container {
     position: fixed;
     bottom: 4vh;
@@ -222,18 +236,17 @@ body {
     -webkit-overflow-scrolling: touch;
     display: flex;
     flex-direction: column;
-    gap: 15px; /* Más espacio entre burbujas */
+    gap: 15px; 
     margin-bottom: 15px;
     padding: 10px;
 }
 
-/* Burbuja con ancho mínimo para Audio */
 .burbuja { 
     padding: 12px 16px; 
     border-radius: 18px; 
     font-size: 0.95rem; 
     max-width: 85%; 
-    min-width: 220px; /* Evita que el audio se corte */
+    min-width: 220px; 
     word-wrap: break-word;
     display: flex;
     flex-direction: column;
@@ -242,12 +255,10 @@ body {
 .burbuja.el { align-self: flex-end; background: #ffca28; color: #000; border-bottom-right-radius: 4px; }
 .burbuja.ella { align-self: flex-start; background: rgba(255, 255, 255, 0.95); color: #111; border-bottom-left-radius: 4px; }
 
-/* Reproductor de Audio Optimizado */
 audio { 
     width: 100% !important; 
     height: 40px; 
     margin-top: 8px;
-    /* Filtro invertido suave para que se vean los iconos en fondo oscuro/amarillo */
     filter: invert(85%) hue-rotate(180deg) brightness(1.2); 
     display: block;
 }
@@ -294,7 +305,12 @@ audio {
 @media (max-width: 600px) {
     .flower-img { max-width: 40vw !important; }
     .titulo { font-size: 1.5rem; margin-top: 15px; }
-    .poema { top: 90px; padding: 18px; width: 92%; }
+    .poema { 
+        top: 90px; 
+        padding: 18px; 
+        width: 92%; 
+        max-height: 40vh; /* Ajuste para móvil */
+    }
     .chat-container { bottom: 20px; width: 94%; }
-    .burbuja { min-width: 200px; } /* Ajuste leve para pantallas muy pequeñas */
+    .burbuja { min-width: 200px; }
 }
