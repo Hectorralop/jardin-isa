@@ -11,6 +11,7 @@ const gardenFondo = document.getElementById('garden-fondo');
 const gardenFrente = document.getElementById('garden-frente');
 const btnRecord = document.getElementById('btn-record');
 
+// Definición de flores con sus alturas base
 const floresInfo = [
     { src: 'flor_central.png', h: 300 }, 
     { src: 'campanulas.png', h: 200 },   
@@ -34,34 +35,39 @@ function iniciarRegalo() {
     crearLuciernagasFondo();
     construirRamo();
     
+    // Pétalos cayendo
     setInterval(() => { if (!document.hidden) crearPetalo(); }, 1200);
 
+    // Activación del ramo y el poema
     setTimeout(() => {
-        // CORRECCIÓN: Usamos una clase en lugar de estilo directo para evitar conflictos con el CSS
         if(gardenFrente) gardenFrente.classList.add('activo'); 
         escribirPoema(); 
     }, 500);
 }
 
-// --- 3. CONSTRUCCIÓN DEL JARDÍN ---
+// --- 3. CONSTRUCCIÓN DEL JARDÍN (DISTRIBUCIÓN MEJORADA) ---
 function construirRamo() {
     const cont = document.getElementById('garden-frente');
     if (!cont) return;
 
-    const elementosPrevios = cont.querySelectorAll('.flower-img, .enjambre-wrapper');
-    elementosPrevios.forEach(el => el.remove());
+    cont.innerHTML = ''; // Limpieza total antes de construir
 
     const fragmento = document.createDocumentFragment();
     
-    crearFlorImagen(fragmento, floresInfo[1], 15, 20, 0.5, -20, 5);
-    crearFlorImagen(fragmento, floresInfo[2], 85, 30, 0.8, 20, 5);
-    crearEnjambreCorazon(fragmento);
-    crearFlorImagen(fragmento, floresInfo[0], 40, 15, 0.4, -8, 10);
-    crearFlorImagen(fragmento, floresInfo[0], 60, 15, 0.7, 8, 10);
-    crearFlorImagen(fragmento, floresInfo[0], 50, 60, 0, 0, 15);
+    // 1. CAPA FONDO (Z-INDEX 5): Flores laterales muy separadas
+    crearFlorImagen(fragmento, floresInfo[1], 10, 0, 0.5, -15, 5); // Campanula Izq
+    crearFlorImagen(fragmento, floresInfo[2], 90, 0, 0.8, 15, 5);  // Lirio Der
     
-    [15, 32, 50, 68, 85].forEach((pos, i) => {
-        crearFlorImagen(fragmento, floresInfo[3], pos, 10, i * 0.1, 0, 20);
+    // 2. CAPA MEDIA (Z-INDEX 10-15): El corazón y las flores principales
+    crearEnjambreCorazon(fragmento);
+    crearFlorImagen(fragmento, floresInfo[0], 30, 5, 0.4, -5, 10); // Flor central izq
+    crearFlorImagen(fragmento, floresInfo[0], 70, 5, 0.7, 5, 10);  // Flor central der
+    crearFlorImagen(fragmento, floresInfo[0], 50, 40, 0, 0, 15);  // Flor central protagonista (más alta)
+    
+    // 3. CAPA FRENTE (Z-INDEX 20): Amapolas pequeñas distribuidas en la base
+    const posicionesAmapolas = [20, 35, 50, 65, 80];
+    posicionesAmapolas.forEach((pos, i) => {
+        crearFlorImagen(fragmento, floresInfo[3], pos, -10, i * 0.1, 0, 20);
     });
 
     cont.appendChild(fragmento);
@@ -71,7 +77,20 @@ function crearFlorImagen(cont, info, x, hAdj, delay, ang, z) {
     const img = document.createElement('img');
     img.src = info.src;
     img.className = 'flower-img';
-    img.style.cssText = `left:${x}%; height:${info.h + hAdj}px; z-index:${z}; transform: translateX(-50%) rotate(${ang}deg); animation-delay:${delay}s;`;
+    
+    // ESCALADO INTELIGENTE: Si es móvil, reducimos el tamaño base para evitar amontonamiento
+    const esMovil = window.innerWidth < 600;
+    const factorEscala = esMovil ? 0.65 : 1.0; 
+    const alturaFinal = (info.h * factorEscala) + hAdj;
+    
+    img.style.cssText = `
+        left: ${x}%; 
+        height: ${alturaFinal}px; 
+        z-index: ${z}; 
+        transform: translateX(-50%) rotate(${ang}deg); 
+        animation-delay: ${delay}s;
+    `;
+    
     img.onload = () => img.style.opacity = '1';
     cont.appendChild(img);
 }
@@ -87,8 +106,11 @@ function crearEnjambreCorazon(contenedor) {
         const t = (i / cant) * (2 * Math.PI);
         const x = 16 * Math.pow(Math.sin(t), 3);
         const y = -(13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t));
-        p.style.left = (x * 6.5) + 'px';
-        p.style.top = (y * 6.5) + 'px';
+        
+        // Ajuste de escala del corazón para móvil
+        const escalaCorazon = window.innerWidth < 600 ? 5.5 : 6.5;
+        p.style.left = (x * escalaCorazon) + 'px';
+        p.style.top = (y * escalaCorazon) + 'px';
         p.style.animationDelay = (Math.random() * 3) + 's';
         wrapper.appendChild(p);
     }
@@ -121,7 +143,7 @@ function crearPetalo() {
     setTimeout(() => p.remove(), dur * 1000);
 }
 
-// --- 5. CARTA DIARIA (CORREGIDO CON SCROLL AUTOMÁTICO) ---
+// --- 5. CARTA DIARIA ---
 async function escribirPoema() {
     const cont = document.getElementById('texto-poema');
     const cajaCarta = document.querySelector('.poema');
@@ -142,7 +164,7 @@ async function escribirPoema() {
             if (i < texto.length) {
                 cont.innerHTML += (texto[i] === "\n" || texto[i] === "\r") ? "<br>" : texto[i];
                 i++;
-                cajaCarta.scrollTop = cajaCarta.scrollHeight;
+                cajaCarta.scrollTop = cajaCarta.scrollHeight; // Auto-scroll
                 setTimeout(type, 55);
             }
         }
@@ -176,14 +198,9 @@ async function cargarChat() {
                     const audioEle = document.createElement('audio');
                     audioEle.src = reg.fields.AudioUrl;
                     audioEle.controls = true;
-                    audioEle.preload = "metadata";
                     audioEle.style.width = "100%";
-                    audioEle.style.display = "block";
-
                     audioEle.onplay = () => { if (musicaFondo) suavizarVolumen(musicaFondo, 0.1); };
                     audioEle.onpause = () => { if (musicaFondo) suavizarVolumen(musicaFondo, 1.0); };
-                    audioEle.onended = () => { if (musicaFondo) suavizarVolumen(musicaFondo, 1.0); };
-
                     div.appendChild(audioEle);
                 } else {
                     div.innerText = reg.fields.Mensaje;
@@ -191,16 +208,13 @@ async function cargarChat() {
                 historial.appendChild(div);
             });
         }
-        setTimeout(() => {
-            historial.scrollTo({ top: historial.scrollHeight, behavior: 'smooth' });
-        }, 200);
+        setTimeout(() => { historial.scrollTo({ top: historial.scrollHeight, behavior: 'smooth' }); }, 200);
     } catch (e) { console.error("Error chat:", e); }
 }
 
 function revelarChat() {
     const chatObj = document.querySelector('.chat-container');
     if (!chatObj) return;
-    
     if (chatObj.classList.contains('mostrar')) {
         chatObj.classList.remove('mostrar');
         setTimeout(() => chatObj.style.display = 'none', 500);
@@ -244,17 +258,14 @@ async function iniciarGrabacion() {
         mediaRecorder = new MediaRecorder(stream);
         audioChunks = [];
         segundos = 0;
-        
         const timerLabel = document.getElementById('timer-grabacion');
         if (timerLabel) { timerLabel.innerText = "00:00"; timerLabel.style.display = "inline"; }
-        
         timerInterval = setInterval(() => {
             segundos++;
             let min = Math.floor(segundos / 60).toString().padStart(2, '0');
             let seg = (segundos % 60).toString().padStart(2, '0');
             if (timerLabel) timerLabel.innerText = `${min}:${seg}`;
         }, 1000);
-
         mediaRecorder.ondataavailable = (e) => audioChunks.push(e.data);
         mediaRecorder.onstop = subirAudioACloudinary;
         mediaRecorder.start();
@@ -278,19 +289,14 @@ async function subirAudioACloudinary() {
     const formData = new FormData();
     formData.append('file', audioBlob);
     formData.append('upload_preset', CLOUDINARY_PRESET);
-    
     const iconOriginal = btnRecord.innerHTML;
     btnRecord.innerHTML = "⏳";
-
     try {
         const resp = await fetch(CLOUDINARY_URL, { method: 'POST', body: formData });
         const data = await resp.json();
         if (data.secure_url) await enviarMensajeFinal(null, data.secure_url);
         btnRecord.innerHTML = iconOriginal;
-    } catch (err) { 
-        btnRecord.innerHTML = "❌"; 
-        setTimeout(() => btnRecord.innerHTML = iconOriginal, 2000); 
-    }
+    } catch (err) { btnRecord.innerHTML = "❌"; setTimeout(() => btnRecord.innerHTML = iconOriginal, 2000); }
 }
 
 function suavizarVolumen(elementoAudio, volumenObjetivo) {
