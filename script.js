@@ -18,7 +18,7 @@ const floresInfo = [
     { src: 'amapolas.png', h: 130 }      
 ];
 
-// --- 2. CONTROL DE FLUJO ---
+// --- 2. FLUJO INICIAL ---
 function iniciarRegalo() {
     const overlay = document.getElementById('overlay');
     const musica = document.getElementById('musica');
@@ -29,7 +29,7 @@ function iniciarRegalo() {
         setTimeout(() => overlay.style.display = 'none', 800);
     }
 
-    if (musica) musica.play().catch(() => console.log("Interacción requerida para audio"));
+    if (musica) musica.play().catch(() => console.log("Audio requiere interacción"));
 
     crearLuciernagasFondo();
     construirRamo();
@@ -42,7 +42,7 @@ function iniciarRegalo() {
     }, 500);
 }
 
-// --- 3. CONSTRUCCIÓN DEL RAMO (DISTRIBUCIÓN DE ALTURAS MAESTRA) ---
+// --- 3. CONSTRUCCIÓN DEL RAMO (VERSIÓN CORREGIDA DE APERTURA) ---
 function construirRamo() {
     const cont = document.getElementById('garden-frente');
     if (!cont) return;
@@ -50,21 +50,21 @@ function construirRamo() {
 
     const fragmento = document.createDocumentFragment();
     
-    // NIVEL 1: FONDO (Flores de marco - Altas y abiertas)
-    crearFlorImagen(fragmento, floresInfo[1], 12, 65, 0.6, -18, 5); 
-    crearFlorImagen(fragmento, floresInfo[2], 88, 75, 0.9, 18, 5);  
+    // NIVEL 1: FONDO (Marcos laterales muy abiertos)
+    crearFlorImagen(fragmento, floresInfo[1], 8, 65, 0.6, -22, 5);  // Campanula Izq
+    crearFlorImagen(fragmento, floresInfo[2], 92, 75, 0.9, 22, 5);  // Lirio Der
     
     crearEnjambreCorazon(fragmento);
 
-    // NIVEL 2: MEDIO (Escalonamiento central)
-    crearFlorImagen(fragmento, floresInfo[0], 32, -45, 0.4, -8, 10); // Flor izquierda baja
-    crearFlorImagen(fragmento, floresInfo[0], 68, 15, 0.7, 8, 10);   // Flor derecha media
-    crearFlorImagen(fragmento, floresInfo[0], 50, 115, 0, 0, 15);   // LA REINA (Punto más alto)
+    // NIVEL 2: MEDIO (Flores principales con espacio entre ellas)
+    crearFlorImagen(fragmento, floresInfo[0], 28, -50, 0.4, -12, 10); // Baja izq
+    crearFlorImagen(fragmento, floresInfo[0], 72, 10, 0.7, 12, 10);   // Media der
+    crearFlorImagen(fragmento, floresInfo[0], 50, 135, 0, 0, 15);    // REINA (Punto más alto)
 
-    // NIVEL 3: FRENTE (Amapolas - Muy bajas para rellenar la base)
-    const posicionesAmapolas = [25, 40, 50, 60, 75];
+    // NIVEL 3: FRENTE (Amapolas pegadas a la base para no tapar el centro)
+    const posicionesAmapolas = [20, 35, 50, 65, 80];
     posicionesAmapolas.forEach((pos, i) => {
-        crearFlorImagen(fragmento, floresInfo[3], pos, -65, i * 0.1, 0, 20);
+        crearFlorImagen(fragmento, floresInfo[3], pos, -75, i * 0.1, 0, 20);
     });
 
     cont.appendChild(fragmento);
@@ -76,7 +76,7 @@ function crearFlorImagen(cont, info, x, hAdj, delay, ang, z) {
     img.className = 'flower-img';
     
     const esMovil = window.innerWidth < 600;
-    const factorEscala = esMovil ? 0.65 : 1.0; 
+    const factorEscala = esMovil ? 0.62 : 1.0; 
     
     const alturaFinal = (info.h * factorEscala) + hAdj;
     
@@ -113,7 +113,7 @@ function crearEnjambreCorazon(contenedor) {
     contenedor.appendChild(wrapper);
 }
 
-// --- 4. EFECTOS AMBIENTALES ---
+// --- 4. EFECTOS ---
 function crearLuciernagasFondo() {
     if (!gardenFondo) return;
     for (let i = 0; i < 12; i++) {
@@ -139,7 +139,7 @@ function crearPetalo() {
     setTimeout(() => p.remove(), dur * 1000);
 }
 
-// --- 5. CARTA DIARIA ---
+// --- 5. POEMA ---
 async function escribirPoema() {
     const cont = document.getElementById('texto-poema');
     const cajaCarta = document.querySelector('.poema');
@@ -165,7 +165,7 @@ async function escribirPoema() {
     } catch (e) { cont.innerHTML = "Eres mi jardín favorito. ✨💘"; }
 }
 
-// --- 6. CHAT Y MENSAJERÍA ---
+// --- 6. CHAT ---
 async function cargarChat() {
     try {
         const hoy = new Date().toISOString().split('T')[0];
@@ -224,7 +224,7 @@ function enviarMensaje() {
     enviarMensajeFinal(input.value); input.value = '';
 }
 
-// --- 7. SISTEMA DE AUDIO ---
+// --- 7. AUDIO ---
 if (btnRecord) {
     btnRecord.addEventListener('mousedown', iniciarGrabacion);
     btnRecord.addEventListener('mouseup', detenerGrabacion);
@@ -249,7 +249,7 @@ async function iniciarGrabacion() {
         mediaRecorder.onstop = subirAudioACloudinary;
         mediaRecorder.start();
         btnRecord.classList.add('grabando');
-    } catch (err) { alert("Acceso al micrófono denegado."); }
+    } catch (err) { alert("Micrófono no disponible."); }
 }
 
 function detenerGrabacion() {
