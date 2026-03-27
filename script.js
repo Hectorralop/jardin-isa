@@ -18,7 +18,7 @@ const floresInfo = [
     { src: 'amapolas.png', h: 130 }      
 ];
 
-// --- 2. INICIO ---
+// --- 2. INICIO Y CONTROL DE INTERFAZ ---
 function iniciarRegalo() {
     const overlay = document.getElementById('overlay');
     const musica = document.getElementById('musica');
@@ -29,42 +29,45 @@ function iniciarRegalo() {
         setTimeout(() => overlay.style.display = 'none', 800);
     }
 
-    if (musica) musica.play().catch(() => console.log("Clic necesario"));
+    if (musica) musica.play().catch(() => console.log("Clic necesario para audio"));
 
     crearLuciernagasFondo();
     construirRamo();
     
+    // Pétalos cayendo
     setInterval(() => { if (!document.hidden) crearPetalo(); }, 1200);
 
+    // Activación del ramo y el poema con un ligero retraso
     setTimeout(() => {
         if(gardenFrente) gardenFrente.classList.add('activo'); 
         escribirPoema(); 
     }, 500);
 }
 
-// --- 3. EL RAMO PERFECTO (ALTURAS Y APERTURA) ---
+// --- 3. CONSTRUCCIÓN DEL RAMO (DISTRIBUCIÓN DE ALTURAS MAESTRA) ---
 function construirRamo() {
     const cont = document.getElementById('garden-frente');
     if (!cont) return;
-    cont.innerHTML = ''; 
+    cont.innerHTML = ''; // Limpieza total antes de construir
 
     const fragmento = document.createDocumentFragment();
     
-    // CAPA 1: MARCO EXTERIOR (Muy abiertas en las esquinas)
-    crearFlorImagen(fragmento, floresInfo[1], 5, 60, 0.8, -25, 5);  // Izquierda extrema
-    crearFlorImagen(fragmento, floresInfo[2], 95, 75, 1.0, 25, 5);  // Derecha extrema
+    // NIVEL 1: FONDO (Lirios y Campanulas - Alturas medias para enmarcar)
+    crearFlorImagen(fragmento, floresInfo[1], 10, 50, 0.6, -15, 5);  // Campanula Izq
+    crearFlorImagen(fragmento, floresInfo[2], 90, 60, 0.9, 15, 5);  // Lirio Der
     
     crearEnjambreCorazon(fragmento);
 
-    // CAPA 2: CUERPO DEL RAMO (Escalera visual)
-    crearFlorImagen(fragmento, floresInfo[0], 25, -55, 0.5, -15, 10); // Baja izq
-    crearFlorImagen(fragmento, floresInfo[0], 75, 15, 0.7, 15, 10);   // Media der
-    crearFlorImagen(fragmento, floresInfo[0], 50, 140, 0, 0, 15);    // REINA ALTA (Centro)
-
-    // CAPA 3: BASE (Amapolas como relleno inferior)
-    const posicionesAmapolas = [18, 34, 50, 66, 82];
+    // NIVEL 2: MEDIO (Flor Central - Escalonamiento drástico corregido)
+    crearFlorImagen(fragmento, floresInfo[0], 28, -50, 0.4, -10, 10); // Flor baja a la izq
+    crearFlorImagen(fragmento, floresInfo[0], 72, 10, 0.7, 10, 10);    // Flor media a la der
+    crearFlorImagen(fragmento, floresInfo[0], 50, 135, 0, 0, 15);    // LA REINA (Punto más alto, centro)
+    
+    // NIVEL 3: FRENTE (Amapolas - Muy bajas para rellenar la base sin tapar)
+    const posicionesAmapolas = [20, 35, 50, 65, 80];
     posicionesAmapolas.forEach((pos, i) => {
-        crearFlorImagen(fragmento, floresInfo[3], pos, -80, i * 0.15, 0, 20);
+        // hAdj negativo (-65) para asegurar que se queden abajo
+        crearFlorImagen(fragmento, floresInfo[3], pos, -65, i * 0.1, 0, 20);
     });
 
     cont.appendChild(fragmento);
@@ -76,8 +79,10 @@ function crearFlorImagen(cont, info, x, hAdj, delay, ang, z) {
     img.className = 'flower-img';
     
     const esMovil = window.innerWidth < 600;
-    const factorEscala = esMovil ? 0.6 : 1.0; 
+    // Factor de escala en móvil un poco más reducido para evitar el amontonamiento horizontal
+    const factorEscala = esMovil ? 0.62 : 1.0; 
     
+    // Calculamos la altura final sumando el ajuste drástico
     const alturaFinal = (info.h * factorEscala) + hAdj;
     
     img.style.cssText = `
@@ -104,16 +109,17 @@ function crearEnjambreCorazon(contenedor) {
         const x = 16 * Math.pow(Math.sin(t), 3);
         const y = -(13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t));
         
-        const escala = window.innerWidth < 600 ? 5.5 : 6.5;
-        p.style.left = (x * escala) + 'px';
-        p.style.top = (y * escala) + 'px';
+        // Escala del corazón para móvil
+        const escalaCorazon = window.innerWidth < 600 ? 5.5 : 6.5;
+        p.style.left = (x * escalaCorazon) + 'px';
+        p.style.top = (y * escalaCorazon) + 'px';
         p.style.animationDelay = (Math.random() * 3) + 's';
         wrapper.appendChild(p);
     }
     contenedor.appendChild(wrapper);
 }
 
-// --- 4. AMBIENTE ---
+// --- 4. EFECTOS AMBIENTALES ---
 function crearLuciernagasFondo() {
     if (!gardenFondo) return;
     for (let i = 0; i < 12; i++) {
@@ -139,25 +145,33 @@ function crearPetalo() {
     setTimeout(() => p.remove(), dur * 1000);
 }
 
-// --- 5. TEXTO DINÁMICO ---
+// --- 5. CARTA DIARIA (CORREGIDO CON SCROLL AUTOMÁTICO) ---
 async function escribirPoema() {
     const cont = document.getElementById('texto-poema');
     const cajaCarta = document.querySelector('.poema');
     if (!cont || !cajaCarta) return;
+
     cajaCarta.classList.add('visible');
+
     try {
         const hoy = new Date().toISOString().split('T')[0];
         const url = `https://api.airtable.com/v0/${BASE_ID}/${TABLA_MENSAJE_DIARIO}?filterByFormula=IS_SAME({Fecha},'${hoy}','day')`;
-        const resp = await fetch(url, { headers: { Authorization: `Bearer ${AIRTABLE_API_KEY}` } });
-        const data = await resp.json();
+        const response = await fetch(url, { headers: { Authorization: `Bearer ${AIRTABLE_API_KEY}` } });
+        const data = await response.json();
         const texto = (data.records && data.records.length > 0) ? data.records[0].fields.Contenido : "Eres mi jardín favorito. ✨💘";
+
         cont.innerHTML = ""; 
         let i = 0;
         function type() {
             if (i < texto.length) {
+                // Insertamos letra o salto de línea
                 cont.innerHTML += (texto[i] === "\n" || texto[i] === "\r") ? "<br>" : texto[i];
                 i++;
+
+                // Lógica de Scroll Automático:
+                // Movemos el scroll del contenedor (.poema) al máximo de su altura actual
                 cajaCarta.scrollTop = cajaCarta.scrollHeight;
+
                 setTimeout(type, 55);
             }
         }
@@ -165,66 +179,87 @@ async function escribirPoema() {
     } catch (e) { cont.innerHTML = "Eres mi jardín favorito. ✨💘"; }
 }
 
-// --- 6. CHAT ---
+// --- 6. CHAT Y MENSAJES ---
 async function cargarChat() {
     try {
         const hoy = new Date().toISOString().split('T')[0];
         const filtro = `IS_SAME({Fecha}, '${hoy}', 'day')`;
         const url = `https://api.airtable.com/v0/${BASE_ID}/${TABLA_CHAT}?filterByFormula=${encodeURIComponent(filtro)}&sort[0][field]=Fecha&sort[0][direction]=asc`;
-        const resp = await fetch(url, { headers: { Authorization: `Bearer ${AIRTABLE_API_KEY}` } });
-        const data = await resp.json();
+
+        const response = await fetch(url, { headers: { Authorization: `Bearer ${AIRTABLE_API_KEY}` } });
+        const data = await response.json();
         const historial = document.getElementById('historial-chat');
-        const musica = document.getElementById('musica'); 
+        const musicaFondo = document.getElementById('musica'); 
+        
         if (!historial) return;
         historial.innerHTML = '';
-        if (data.records) {
+
+        if (!data.records || data.records.length === 0) {
+            historial.innerHTML = '<div style="text-align:center; color:rgba(255,255,255,0.3); font-size:0.8rem; margin-top:20px;">Escribe algo especial... ✨</div>';
+        } else {
             data.records.forEach(reg => {
                 const div = document.createElement('div');
                 div.className = `burbuja ${reg.fields.Nombre === "El" ? "el" : "ella"}`;
+                
                 if (reg.fields.AudioUrl) {
-                    const aud = document.createElement('audio');
-                    aud.src = reg.fields.AudioUrl; aud.controls = true;
-                    aud.onplay = () => { if (musica) suavizarVolumen(musica, 0.1); };
-                    aud.onpause = () => { if (musica) suavizarVolumen(musica, 1.0); };
-                    div.appendChild(aud);
-                } else { div.innerText = reg.fields.Mensaje; }
+                    const audioEle = document.createElement('audio');
+                    audioEle.src = reg.fields.AudioUrl;
+                    audioEle.controls = true;
+                    audioEle.preload = "metadata";
+                    audioEle.style.width = "100%";
+                    audioEle.style.display = "block";
+
+                    audioEle.onplay = () => { if (musicaFondo) suavizarVolumen(musicaFondo, 0.1); };
+                    audioEle.onpause = () => { if (musicaFondo) suavizarVolumen(musicaFondo, 1.0); };
+                    audioEle.onended = () => { if (musicaFondo) suavizarVolumen(musicaFondo, 1.0); };
+
+                    div.appendChild(audioEle);
+                } else {
+                    div.innerText = reg.fields.Mensaje;
+                }
                 historial.appendChild(div);
             });
         }
-        setTimeout(() => { historial.scrollTo({ top: historial.scrollHeight, behavior: 'smooth' }); }, 200);
-    } catch (e) { console.error(e); }
+        setTimeout(() => {
+            historial.scrollTo({ top: historial.scrollHeight, behavior: 'smooth' });
+        }, 200);
+    } catch (e) { console.error("Error chat:", e); }
 }
 
 function revelarChat() {
-    const c = document.querySelector('.chat-container');
-    if (!c) return;
-    if (c.classList.contains('mostrar')) {
-        c.classList.remove('mostrar');
-        setTimeout(() => c.style.display = 'none', 500);
+    const chatObj = document.querySelector('.chat-container');
+    if (!chatObj) return;
+    
+    if (chatObj.classList.contains('mostrar')) {
+        chatObj.classList.remove('mostrar');
+        setTimeout(() => chatObj.style.display = 'none', 500);
     } else {
-        c.style.display = 'block';
-        setTimeout(() => { c.classList.add('mostrar'); cargarChat(); }, 50);
+        chatObj.style.display = 'block';
+        setTimeout(() => { chatObj.classList.add('mostrar'); cargarChat(); }, 50);
     }
 }
 
-async function enviarMensajeFinal(t, u = null) {
+async function enviarMensajeFinal(texto, urlAudio = null) {
     try {
         await fetch(`https://api.airtable.com/v0/${BASE_ID}/${TABLA_CHAT}`, {
             method: 'POST',
             headers: { Authorization: `Bearer ${AIRTABLE_API_KEY}`, 'Content-Type': 'application/json' },
-            body: JSON.stringify({ fields: { "Nombre": "El", "Mensaje": t || "", "AudioUrl": u, "Fecha": new Date().toISOString() } })
+            body: JSON.stringify({
+                fields: { "Nombre": "El", "Mensaje": texto || "", "AudioUrl": urlAudio, "Fecha": new Date().toISOString() }
+            })
         });
         cargarChat();
-    } catch (e) { console.error(e); }
+    } catch (e) { console.error("Error envío:", e); }
 }
 
 function enviarMensaje() {
     const input = document.getElementById('nuevo-mensaje');
     if (!input || !input.value.trim()) return;
-    enviarMensajeFinal(input.value); input.value = '';
+    enviarMensajeFinal(input.value);
+    input.value = '';
 }
 
-// --- 7. AUDIO ---
+// --- 7. AUDIO Y GRABACIÓN ---
 if (btnRecord) {
     btnRecord.addEventListener('mousedown', iniciarGrabacion);
     btnRecord.addEventListener('mouseup', detenerGrabacion);
@@ -234,17 +269,21 @@ if (btnRecord) {
 
 async function iniciarGrabacion() {
     try {
-        const s = await navigator.mediaDevices.getUserMedia({ audio: true });
-        mediaRecorder = new MediaRecorder(s);
-        audioChunks = []; segundos = 0;
-        const lbl = document.getElementById('timer-grabacion');
-        if (lbl) { lbl.innerText = "00:00"; lbl.style.display = "inline"; }
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        mediaRecorder = new MediaRecorder(stream);
+        audioChunks = [];
+        segundos = 0;
+        
+        const timerLabel = document.getElementById('timer-grabacion');
+        if (timerLabel) { timerLabel.innerText = "00:00"; timerLabel.style.display = "inline"; }
+        
         timerInterval = setInterval(() => {
             segundos++;
-            let m = Math.floor(segundos / 60).toString().padStart(2, '0');
-            let sec = (segundos % 60).toString().padStart(2, '0');
-            if (lbl) lbl.innerText = `${m}:${sec}`;
+            let min = Math.floor(segundos / 60).toString().padStart(2, '0');
+            let seg = (segundos % 60).toString().padStart(2, '0');
+            if (timerLabel) timerLabel.innerText = `${min}:${seg}`;
         }, 1000);
+
         mediaRecorder.ondataavailable = (e) => audioChunks.push(e.data);
         mediaRecorder.onstop = subirAudioACloudinary;
         mediaRecorder.start();
@@ -255,33 +294,49 @@ async function iniciarGrabacion() {
 function detenerGrabacion() {
     if (mediaRecorder && mediaRecorder.state !== 'inactive') {
         mediaRecorder.stop();
-        mediaRecorder.stream.getTracks().forEach(t => t.stop());
+        mediaRecorder.stream.getTracks().forEach(track => track.stop());
         btnRecord.classList.remove('grabando');
         clearInterval(timerInterval);
-        const lbl = document.getElementById('timer-grabacion');
-        if (lbl) lbl.style.display = "none";
+        const timerLabel = document.getElementById('timer-grabacion');
+        if (timerLabel) timerLabel.style.display = "none";
     }
 }
 
 async function subirAudioACloudinary() {
-    const blob = new Blob(audioChunks, { type: 'audio/webm' });
-    const fd = new FormData();
-    fd.append('file', blob);
-    fd.append('upload_preset', CLOUDINARY_PRESET);
-    const original = btnRecord.innerHTML; btnRecord.innerHTML = "⏳";
+    const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+    const formData = new FormData();
+    formData.append('file', audioBlob);
+    formData.append('upload_preset', CLOUDINARY_PRESET);
+    
+    const iconOriginal = btnRecord.innerHTML;
+    btnRecord.innerHTML = "⏳";
+
     try {
-        const r = await fetch(CLOUDINARY_URL, { method: 'POST', body: fd });
-        const d = await r.json();
-        if (d.secure_url) await enviarMensajeFinal(null, d.secure_url);
-        btnRecord.innerHTML = original;
-    } catch (err) { btnRecord.innerHTML = "❌"; setTimeout(() => btnRecord.innerHTML = original, 2000); }
+        const resp = await fetch(CLOUDINARY_URL, { method: 'POST', body: formData });
+        const data = await resp.json();
+        if (data.secure_url) await enviarMensajeFinal(null, data.secure_url);
+        btnRecord.innerHTML = iconOriginal;
+    } catch (err) { 
+        btnRecord.innerHTML = "❌"; 
+        setTimeout(() => btnRecord.innerHTML = iconOriginal, 2000); 
+    }
 }
 
-function suavizarVolumen(a, v) {
-    const p = 0.05; 
-    let f = setInterval(() => {
-        if (a.volume < v) a.volume = Math.min(a.volume + p, v);
-        else a.volume = Math.max(a.volume - p, v);
-        if (Math.abs(a.volume - v) < 0.01) { a.volume = v; clearInterval(f); }
-    }, 50);
+// --- 8. FUNCIONES AUXILIARES ---
+function suavizarVolumen(elementoAudio, volumenObjetivo) {
+    const paso = 0.05; 
+    const intervalo = 50; 
+
+    let fade = setInterval(() => {
+        if (elementoAudio.volume < volumenObjetivo) {
+            elementoAudio.volume = Math.min(elementoAudio.volume + paso, volumenObjetivo);
+        } else {
+            elementoAudio.volume = Math.max(elementoAudio.volume - paso, volumenObjetivo);
+        }
+
+        if (Math.abs(elementoAudio.volume - volumenObjetivo) < 0.01) {
+            elementoAudio.volume = volumenObjetivo;
+            clearInterval(fade);
+        }
+    }, intervalo);
 }
