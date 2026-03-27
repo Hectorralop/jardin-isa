@@ -37,7 +37,8 @@ function iniciarRegalo() {
     setInterval(() => { if (!document.hidden) crearPetalo(); }, 1200);
 
     setTimeout(() => {
-        if(gardenFrente) gardenFrente.style.bottom = '0';
+        // CORRECCIÓN: Usamos una clase en lugar de estilo directo para evitar conflictos con el CSS
+        if(gardenFrente) gardenFrente.classList.add('activo'); 
         escribirPoema(); 
     }, 500);
 }
@@ -139,14 +140,9 @@ async function escribirPoema() {
         let i = 0;
         function type() {
             if (i < texto.length) {
-                // Insertamos letra o salto de línea
                 cont.innerHTML += (texto[i] === "\n" || texto[i] === "\r") ? "<br>" : texto[i];
                 i++;
-
-                // Lógica de Scroll Automático:
-                // Movemos el scroll del contenedor (.poema) al máximo de su altura actual
                 cajaCarta.scrollTop = cajaCarta.scrollHeight;
-
                 setTimeout(type, 55);
             }
         }
@@ -297,18 +293,15 @@ async function subirAudioACloudinary() {
     }
 }
 
-// --- 8. FUNCIONES AUXILIARES ---
 function suavizarVolumen(elementoAudio, volumenObjetivo) {
     const paso = 0.05; 
     const intervalo = 50; 
-
     let fade = setInterval(() => {
         if (elementoAudio.volume < volumenObjetivo) {
             elementoAudio.volume = Math.min(elementoAudio.volume + paso, volumenObjetivo);
         } else {
             elementoAudio.volume = Math.max(elementoAudio.volume - paso, volumenObjetivo);
         }
-
         if (Math.abs(elementoAudio.volume - volumenObjetivo) < 0.01) {
             elementoAudio.volume = volumenObjetivo;
             clearInterval(fade);
