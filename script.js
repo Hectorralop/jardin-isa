@@ -18,7 +18,7 @@ const floresInfo = [
     { src: 'amapolas.png', h: 130 }      
 ];
 
-// --- 2. FLUJO INICIAL ---
+// --- 2. INICIO ---
 function iniciarRegalo() {
     const overlay = document.getElementById('overlay');
     const musica = document.getElementById('musica');
@@ -29,7 +29,7 @@ function iniciarRegalo() {
         setTimeout(() => overlay.style.display = 'none', 800);
     }
 
-    if (musica) musica.play().catch(() => console.log("Audio requiere interacción"));
+    if (musica) musica.play().catch(() => console.log("Clic necesario"));
 
     crearLuciernagasFondo();
     construirRamo();
@@ -42,7 +42,7 @@ function iniciarRegalo() {
     }, 500);
 }
 
-// --- 3. CONSTRUCCIÓN DEL RAMO (VERSIÓN CORREGIDA DE APERTURA) ---
+// --- 3. EL RAMO PERFECTO (ALTURAS Y APERTURA) ---
 function construirRamo() {
     const cont = document.getElementById('garden-frente');
     if (!cont) return;
@@ -50,21 +50,21 @@ function construirRamo() {
 
     const fragmento = document.createDocumentFragment();
     
-    // NIVEL 1: FONDO (Marcos laterales muy abiertos)
-    crearFlorImagen(fragmento, floresInfo[1], 8, 65, 0.6, -22, 5);  // Campanula Izq
-    crearFlorImagen(fragmento, floresInfo[2], 92, 75, 0.9, 22, 5);  // Lirio Der
+    // CAPA 1: MARCO EXTERIOR (Muy abiertas en las esquinas)
+    crearFlorImagen(fragmento, floresInfo[1], 5, 60, 0.8, -25, 5);  // Izquierda extrema
+    crearFlorImagen(fragmento, floresInfo[2], 95, 75, 1.0, 25, 5);  // Derecha extrema
     
     crearEnjambreCorazon(fragmento);
 
-    // NIVEL 2: MEDIO (Flores principales con espacio entre ellas)
-    crearFlorImagen(fragmento, floresInfo[0], 28, -50, 0.4, -12, 10); // Baja izq
-    crearFlorImagen(fragmento, floresInfo[0], 72, 10, 0.7, 12, 10);   // Media der
-    crearFlorImagen(fragmento, floresInfo[0], 50, 135, 0, 0, 15);    // REINA (Punto más alto)
+    // CAPA 2: CUERPO DEL RAMO (Escalera visual)
+    crearFlorImagen(fragmento, floresInfo[0], 25, -55, 0.5, -15, 10); // Baja izq
+    crearFlorImagen(fragmento, floresInfo[0], 75, 15, 0.7, 15, 10);   // Media der
+    crearFlorImagen(fragmento, floresInfo[0], 50, 140, 0, 0, 15);    // REINA ALTA (Centro)
 
-    // NIVEL 3: FRENTE (Amapolas pegadas a la base para no tapar el centro)
-    const posicionesAmapolas = [20, 35, 50, 65, 80];
+    // CAPA 3: BASE (Amapolas como relleno inferior)
+    const posicionesAmapolas = [18, 34, 50, 66, 82];
     posicionesAmapolas.forEach((pos, i) => {
-        crearFlorImagen(fragmento, floresInfo[3], pos, -75, i * 0.1, 0, 20);
+        crearFlorImagen(fragmento, floresInfo[3], pos, -80, i * 0.15, 0, 20);
     });
 
     cont.appendChild(fragmento);
@@ -76,7 +76,7 @@ function crearFlorImagen(cont, info, x, hAdj, delay, ang, z) {
     img.className = 'flower-img';
     
     const esMovil = window.innerWidth < 600;
-    const factorEscala = esMovil ? 0.62 : 1.0; 
+    const factorEscala = esMovil ? 0.6 : 1.0; 
     
     const alturaFinal = (info.h * factorEscala) + hAdj;
     
@@ -113,7 +113,7 @@ function crearEnjambreCorazon(contenedor) {
     contenedor.appendChild(wrapper);
 }
 
-// --- 4. EFECTOS ---
+// --- 4. AMBIENTE ---
 function crearLuciernagasFondo() {
     if (!gardenFondo) return;
     for (let i = 0; i < 12; i++) {
@@ -139,7 +139,7 @@ function crearPetalo() {
     setTimeout(() => p.remove(), dur * 1000);
 }
 
-// --- 5. POEMA ---
+// --- 5. TEXTO DINÁMICO ---
 async function escribirPoema() {
     const cont = document.getElementById('texto-poema');
     const cajaCarta = document.querySelector('.poema');
