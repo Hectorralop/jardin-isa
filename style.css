@@ -43,8 +43,13 @@ body {
 
 #garden-frente {
     z-index: 20;
-    bottom: -100%; /* Estado inicial (oculto) */
+    bottom: -100%; /* Nacimiento desde abajo */
     transition: bottom 3s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+/* ESTADO ACTIVO PARA PC */
+#garden-frente.activo {
+    bottom: 0 !important;
 }
 
 /* --- 3. ELEMENTOS DINÁMICOS --- */
@@ -119,7 +124,7 @@ body {
     100% { transform: translateY(110vh) rotate(360deg) translateX(50px); opacity: 0; }
 }
 
-/* --- 4. INTERFAZ DE USUARIO (UI) --- */
+/* --- 4. INTERFAZ DE USUARIO --- */
 #overlay {
     position: fixed;
     top: 0; left: 0; width: 100%; height: 100%;
@@ -157,7 +162,7 @@ body {
     text-shadow: 0 0 10px #ffca28;
 }
 
-/* --- 5. POEMA Y CARTA (CON SCROLL AUTOMÁTICO) --- */
+/* --- 5. POEMA Y CARTA --- */
 .poema {
     position: absolute;
     top: 130px; 
@@ -173,34 +178,25 @@ body {
     text-align: center;
     z-index: 150;
     border: 1px solid rgba(255, 202, 40, 0.3);
-    
-    /* CONFIGURACIÓN DE SCROLL ACTIVA */
     max-height: 45vh; 
     overflow-y: auto; 
     display: block;
     scrollbar-width: none; 
     -ms-overflow-style: none;
-    
     opacity: 0;
     visibility: hidden;
     transition: opacity 1.5s ease;
 }
 
-.poema::-webkit-scrollbar {
-    display: none;
-}
-
-.poema.visible { 
-    opacity: 1; 
-    visibility: visible;
-}
+.poema::-webkit-scrollbar { display: none; }
+.poema.visible { opacity: 1; visibility: visible; }
 
 #texto-poema { 
     color: #ffca28; 
     font-size: 1.05rem; 
     line-height: 1.7; 
     font-style: italic;
-    padding-bottom: 30px; /* Espacio para que el scroll baje bien */
+    padding-bottom: 30px;
 }
 
 /* --- 6. SISTEMA DE CHAT --- */
@@ -223,16 +219,12 @@ body {
     transition: all 0.5s ease;
 }
 
-.chat-container.mostrar { 
-    display: block; 
-    opacity: 1; 
-}
+.chat-container.mostrar { display: block; opacity: 1; }
 
 #historial-chat {
     max-height: 30vh;
     overflow-y: auto;
     overscroll-behavior: contain;
-    -webkit-overflow-scrolling: touch;
     display: flex;
     flex-direction: column;
     gap: 15px; 
@@ -279,18 +271,7 @@ audio {
     font-size: 1rem; 
 }
 
-.btn-audio, .btn-send { 
-    width: 42px; 
-    height: 42px; 
-    border: none; 
-    background: none; 
-    cursor: pointer; 
-    display: flex; 
-    align-items: center; 
-    justify-content: center; 
-}
-
-.btn-send { background: #ffca28; border-radius: 50%; color: #000; }
+.btn-send { width: 42px; height: 42px; background: #ffca28; border: none; border-radius: 50%; color: #000; cursor: pointer; display: flex; align-items: center; justify-content: center; }
 .btn-audio.grabando { color: #ff4b2b; animation: latido 1.2s infinite; }
 
 @keyframes latido {
@@ -298,40 +279,39 @@ audio {
     50% { transform: scale(1.3); }
 }
 
-/* --- 8. RESPONSIVE (MÓVIL - CAMBIO RADICAL) --- */
+/* --- 8. RESPONSIVE (MÓVIL) --- */
 @media (max-width: 600px) {
     #garden-frente {
-        /* Subimos el punto de anclaje de las flores */
-        bottom: -50vh !important; 
-        height: 100vh;
-        transition: bottom 2.5s ease-out;
+        bottom: -100%; /* Nacimiento desde abajo */
+    }
+
+    /* ESTADO ACTIVO EN MÓVIL (MÁS ARRIBA QUE EN PC) */
+    #garden-frente.activo {
+        bottom: 12vh !important; 
     }
 
     .flower-img { 
-        /* Hacemos las flores más altas para que ocupen espacio */
-        height: 250px !important; 
-        max-width: 50vw !important;
+        height: auto !important;
+        max-height: 200px !important;
+        max-width: 42vw !important;
     }
 
     .titulo { 
-        font-size: 1.3rem; 
-        margin-top: 10px; 
+        font-size: 1.4rem; 
+        margin-top: 15px; 
     }
 
     .poema { 
-        top: 65px; 
-        width: 94%; 
+        top: 75px; 
+        padding: 18px; 
+        width: 92%; 
         max-height: 35vh; 
-        padding: 15px;
     }
 
     #texto-poema {
         font-size: 0.95rem;
-        line-height: 1.4;
+        line-height: 1.5;
     }
 
-    .chat-container { 
-        bottom: 15px; 
-        width: 96%; 
-    }
+    .chat-container { bottom: 20px; width: 94%; }
 }
