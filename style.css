@@ -1,4 +1,3 @@
-/* --- RESET Y BASE --- */
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
 html, body {
@@ -13,7 +12,7 @@ body {
     color: white;
 }
 
-/* --- CAPAS DEL JARDÍN --- */
+/* --- JARDÍN --- */
 .garden, #garden-fondo, #garden-frente {
     position: absolute; width: 100vw; height: 100vh; top: 0; left: 0;
     overflow: hidden !important; pointer-events: none;
@@ -22,29 +21,28 @@ body {
 #garden-fondo { z-index: 1; filter: blur(1px) brightness(0.7); }
 
 #garden-frente {
-    z-index: 20; bottom: -100%;
-    transition: bottom 3s cubic-bezier(0.2, 0.8, 0.2, 1);
+    z-index: 20; bottom: -110%;
+    transition: bottom 3s cubic-bezier(0.1, 0.7, 0.1, 1);
 }
 
-#garden-frente.activo { bottom: 0 !important; }
+#garden-frente.activo { bottom: -2vh !important; }
 
-/* --- FLORES --- */
 .flower-img {
     position: absolute; bottom: 0;
-    width: auto !important; 
-    object-fit: contain; 
+    width: auto !important;
+    object-fit: contain;
     transform-origin: bottom center;
     animation: sway 4s ease-in-out infinite alternate;
     opacity: 0; transition: opacity 1.5s ease;
-    filter: drop-shadow(0 -5px 12px rgba(0,0,0,0.6));
+    filter: drop-shadow(0 -5px 10px rgba(0,0,0,0.5));
 }
 
 @keyframes sway {
-    0% { transform: translateX(-50%) rotate(-1.2deg); }
-    100% { transform: translateX(-50%) rotate(1.2deg); }
+    0% { transform: translateX(-50%) rotate(-1.5deg); }
+    100% { transform: translateX(-50%) rotate(1.5deg); }
 }
 
-/* --- CORAZÓN Y AMBIENTE --- */
+/* --- ELEMENTOS MÁGICOS --- */
 .enjambre-wrapper { position: absolute; left: 50%; bottom: 50vh; z-index: 12; transform: translateX(-50%); }
 
 .firefly-heart {
@@ -99,7 +97,7 @@ body {
 .poema {
     position: absolute; top: 125px; left: 50%; transform: translateX(-50%);
     width: 88%; max-width: 420px; padding: 25px;
-    background: rgba(0, 20, 20, 0.85); border-radius: 20px;
+    background: rgba(0, 10, 10, 0.75); border-radius: 20px;
     backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
     text-align: center; z-index: 150; border: 1px solid rgba(255, 202, 40, 0.3);
     max-height: 42vh; overflow-y: auto;
@@ -128,11 +126,11 @@ body {
 #nuevo-mensaje { flex: 1; background: transparent; border: none; color: #fff; outline: none; font-size: 1rem; }
 .btn-send { background: #ffca28; border: none; border-radius: 50%; width: 38px; height: 38px; cursor: pointer; }
 
-/* --- RESPONSIVE MÓVIL --- */
+/* --- MÓVIL --- */
 @media (max-width: 600px) {
-    #garden-frente.activo { bottom: 2vh !important; }
-    .flower-img { max-width: 42vw !important; }
-    .poema { top: 70px; max-height: 30vh; width: 92%; padding: 18px; }
-    .enjambre-wrapper { bottom: 44vh; transform: translateX(-50%) scale(0.85); }
+    #garden-frente.activo { bottom: -2vh !important; }
+    .flower-img { max-width: 38vw !important; }
+    .poema { top: 70px; max-height: 30vh; width: 92%; }
+    .enjambre-wrapper { bottom: 45vh; transform: translateX(-50%) scale(0.85); }
     .titulo { font-size: 1.4rem; margin-top: 15px; }
 }
