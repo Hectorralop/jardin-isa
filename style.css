@@ -274,9 +274,13 @@ body {
 
 /* --- 8. RESPONSIVE --- */
 @media (max-width: 600px) {
-    .titulo { font-size: 1.3rem; }
+    .titulo { 
+        font-size: 1.3rem; 
+    }
     .flower-img { 
-        /* En móvil limitamos un poco el tamaño máximo para que no tape el corazón */
-        max-height: 40vh !important; 
+        /* Permitimos que el JS mande sobre el tamaño total */
+        max-height: none !important; 
+        /* Ajustamos un poco el ancho para que no se amontonen en pantallas chicas */
+        max-width: 50vw !important;
     }
 }
