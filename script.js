@@ -41,7 +41,7 @@ function iniciarRegalo() {
     }, 500);
 }
 
-// --- 3. CONSTRUCCIÓN DEL JARDÍN (EQUILIBRIO DE ALTURAS) ---
+// --- 3. CONSTRUCCIÓN DEL JARDÍN (ALTURAS CALIBRADAS) ---
 function construirRamo() {
     const cont = document.getElementById('garden-frente');
     if (!cont) return;
@@ -51,20 +51,20 @@ function construirRamo() {
 
     const fragmento = document.createDocumentFragment();
     
-    // CAPA 1: FONDO (Lirios y Campanulas con más altura para llenar laterales)
+    // CAPA 1: FONDO (Lirios y Campanulas)
     crearFlorImagen(fragmento, floresInfo[1], 12, 60, 0.5, -12, 5, '2vh');  
     crearFlorImagen(fragmento, floresInfo[2], 88, 70, 0.8, 12, 5, '2vh');   
     
     // CAPA 2: CORAZÓN
     crearEnjambreCorazon(fragmento);
 
-    // CAPA 3: CENTRAL (Acomodo equilibrado de Flores Amarillas)
-    // Las laterales ahora están más cerca de la central y con alturas escalonadas
-    crearFlorImagen(fragmento, floresInfo[0], 35, 40, 0.4, -6, 10, '5vh'); 
-    crearFlorImagen(fragmento, floresInfo[0], 65, 60, 0.7, 6, 10, '5vh');    
-    crearFlorImagen(fragmento, floresInfo[0], 50, 150, 0, 0, 15, '6vh'); // LA REINA
+    // CAPA 3: CENTRAL (Ajuste de la "Reina" y sus escoltas)
+    // Bajamos la central de 150 a 110 para que no se vea "estirada"
+    crearFlorImagen(fragmento, floresInfo[0], 35, 45, 0.4, -6, 10, '5vh'); 
+    crearFlorImagen(fragmento, floresInfo[0], 65, 65, 0.7, 6, 10, '5vh');    
+    crearFlorImagen(fragmento, floresInfo[0], 50, 110, 0, 0, 15, '6vh'); // LA REINA (Bajada)
 
-    // CAPA 4: FRENTE (Amapolas Rojas - Escalonamiento orgánico)
+    // CAPA 4: FRENTE (Amapolas Rojas)
     const configAmapolas = [
         {pos: 15, alt: 10, ang: -5},
         {pos: 35, alt: 25, ang: 3},
