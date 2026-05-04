@@ -2,7 +2,7 @@
 const AIRTABLE_API_KEY = 'patfQuYvWIBgZQObG.ee885ffe8950f275cf67e985a15f2cf5a481589c0a7d16b20de0bcbe890af137'; 
 const BASE_ID = 'app8CeyMQkqYjFulz';
 const TABLA_MENSAJE_DIARIO = 'mensajes'; 
-const TABLA_CHAT = 'chat';     
+const TABLA_CHAT = 'chat';      
 const CLOUDINARY_URL = "https://api.cloudinary.com/v1_1/dg1n8hjqd/video/upload";
 const CLOUDINARY_PRESET = "jardin_audios";
 
@@ -14,7 +14,7 @@ const btnRecord = document.getElementById('btn-record');
 const floresInfo = [
     { src: 'flor_central.png', h: 300 }, 
     { src: 'campanulas.png', h: 200 },   
-    { src: 'lirios.png', h: 220 },       
+    { src: 'lirios.png', h: 220 },        
     { src: 'amapolas.png', h: 130 }      
 ];
 
@@ -37,10 +37,8 @@ function iniciarRegalo() {
     // Pétalos cayendo
     setInterval(() => { if (!document.hidden) crearPetalo(); }, 1200);
 
-    // Activación del ramo y el poema
+    // Activación del poema
     setTimeout(() => {
-        // Subimos el contenedor a 2vh para dar margen extra en móviles
-        if(gardenFrente) gardenFrente.style.bottom = '2vh';
         escribirPoema(); 
     }, 500);
 }
@@ -56,19 +54,19 @@ function construirRamo() {
 
     const fragmento = document.createDocumentFragment();
     
-    // CAPA 1: FONDO (Enmarcan el ramo)
-    crearFlorImagen(fragmento, floresInfo[1], 15, 45, 0.5, -12, 5);  // Campanula Izq
-    crearFlorImagen(fragmento, floresInfo[2], 85, 55, 0.8, 12, 5);   // Lirio Der
+    // CAPA 1: FONDO (Base baja: 3vh)
+    crearFlorImagen(fragmento, floresInfo[1], 15, 45, 0.5, -12, 5, '3vh');  // Campanula Izq
+    crearFlorImagen(fragmento, floresInfo[2], 85, 55, 0.8, 12, 5, '3vh');   // Lirio Der
     
-    // CAPA 2: INTERMEDIA (Efecto de corazón)
+    // CAPA 2: INTERMEDIA (Corazón de luciérnagas)
     crearEnjambreCorazon(fragmento);
 
-    // CAPA 3: CENTRAL (Escalonamiento Drástico)
-    crearFlorImagen(fragmento, floresInfo[0], 35, -40, 0.4, -8, 10); // Central Izq (Baja)
-    crearFlorImagen(fragmento, floresInfo[0], 65, 30, 0.7, 8, 10);   // Central Der (Media)
-    crearFlorImagen(fragmento, floresInfo[0], 50, 120, 0, 0, 15);    // LA REINA (Alta)
+    // CAPA 3: CENTRAL (Base media: 6vh - 7vh)
+    crearFlorImagen(fragmento, floresInfo[0], 35, -40, 0.4, -8, 10, '6vh'); // Central Izq
+    crearFlorImagen(fragmento, floresInfo[0], 65, 30, 0.7, 8, 10, '6vh');   // Central Der
+    crearFlorImagen(fragmento, floresInfo[0], 50, 120, 0, 0, 15, '7vh');    // LA REINA (Alta)
 
-    // CAPA 4: FRENTE (Amapolas orgánicas)
+    // CAPA 4: FRENTE (Base alta para amapolas: 10vh)
     const configAmapolas = [
         {pos: 18, alt: -30, ang: -5},
         {pos: 33, alt: -45, ang: 3},
@@ -78,24 +76,25 @@ function construirRamo() {
     ];
 
     configAmapolas.forEach((amapola, i) => {
-        crearFlorImagen(fragmento, floresInfo[3], amapola.pos, amapola.alt, i * 0.1, amapola.ang, 25);
+        crearFlorImagen(fragmento, floresInfo[3], amapola.pos, amapola.alt, i * 0.1, amapola.ang, 25, '10vh');
     });
 
     cont.appendChild(fragmento);
 }
 
-function crearFlorImagen(cont, info, x, hAdj, delay, ang, z) {
+// Función corregida: ahora recibe y aplica 'baseBottom'
+function crearFlorImagen(cont, info, x, hAdj, delay, ang, z, baseBottom) {
     const img = document.createElement('img');
     img.src = info.src;
     img.className = 'flower-img';
     
     const esMovil = window.innerWidth < 600;
     const factorEscala = esMovil ? 0.65 : 1.0; 
-    
     const alturaFinal = (info.h + hAdj) * factorEscala;
     
     img.style.cssText = `
         left: ${x}%; 
+        bottom: ${baseBottom}; 
         height: ${alturaFinal}px; 
         z-index: ${z}; 
         transform: translateX(-50%) rotate(${ang}deg); 
@@ -238,10 +237,6 @@ function revelarChat() {
     }
 }
 
-function cerrarChat() {
-    revelarChat();
-}
-
 async function enviarMensajeFinal(texto, urlAudio = null) {
     try {
         await fetch(`https://api.airtable.com/v0/${BASE_ID}/${TABLA_CHAT}`, {
@@ -325,7 +320,6 @@ async function subirAudioACloudinary() {
     }
 }
 
-// --- 8. FUNCIONES AUXILIARES ---
 function suavizarVolumen(elementoAudio, volumenObjetivo) {
     const paso = 0.05; 
     const intervalo = 50; 
