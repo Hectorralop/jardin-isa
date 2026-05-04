@@ -37,7 +37,7 @@ function iniciarRegalo() {
     setInterval(() => { if (!document.hidden) crearPetalo(); }, 1200);
 
     setTimeout(() => {
-        if(gardenFrente) gardenFrente.style.bottom = '0';
+        if(gardenFrente) gardenFrente.style.bottom = '6vh';
         escribirPoema(); 
     }, 500);
 }
