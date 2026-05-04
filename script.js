@@ -34,33 +34,49 @@ function iniciarRegalo() {
     crearLuciernagasFondo();
     construirRamo();
     
+    // Pétalos cayendo
     setInterval(() => { if (!document.hidden) crearPetalo(); }, 1200);
 
+    // Activación del ramo y el poema
     setTimeout(() => {
-        if(gardenFrente) gardenFrente.style.bottom = '6vh';
+        // Ajustamos el bottom para que el ramo suba desde la base
+        if(gardenFrente) gardenFrente.style.bottom = '0vh';
         escribirPoema(); 
     }, 500);
 }
 
-// --- 3. CONSTRUCCIÓN DEL JARDÍN ---
+// --- 3. CONSTRUCCIÓN DEL JARDÍN (EL RESULTADO QUE TE GUSTÓ) ---
 function construirRamo() {
     const cont = document.getElementById('garden-frente');
     if (!cont) return;
 
+    // Limpieza total antes de construir
     const elementosPrevios = cont.querySelectorAll('.flower-img, .enjambre-wrapper');
     elementosPrevios.forEach(el => el.remove());
 
     const fragmento = document.createDocumentFragment();
     
-    crearFlorImagen(fragmento, floresInfo[1], 15, 20, 0.5, -20, 5);
-    crearFlorImagen(fragmento, floresInfo[2], 85, 30, 0.8, 20, 5);
-    crearEnjambreCorazon(fragmento);
-    crearFlorImagen(fragmento, floresInfo[0], 40, 15, 0.4, -8, 10);
-    crearFlorImagen(fragmento, floresInfo[0], 60, 15, 0.7, 8, 10);
-    crearFlorImagen(fragmento, floresInfo[0], 50, 60, 0, 0, 15);
+    // CAPA 1: FONDO (Lirios y Campanulas - Enmarcan el ramo)
+    crearFlorImagen(fragmento, floresInfo[1], 15, 35, 0.5, -15, 5);  // Campanula Izq
+    crearFlorImagen(fragmento, floresInfo[2], 85, 45, 0.8, 15, 5);   // Lirio Der
     
-    [15, 32, 50, 68, 85].forEach((pos, i) => {
-        crearFlorImagen(fragmento, floresInfo[3], pos, 10, i * 0.1, 0, 20);
+    // CAPA 2: INTERMEDIA (Efecto de lucérnagas)
+    crearEnjambreCorazon(fragmento);
+
+    // CAPA 3: CENTRAL (Escalonamiento Drástico)
+    // Flor central izquierda (Bajita)
+    crearFlorImagen(fragmento, floresInfo[0], 35, -30, 0.4, -10, 10); 
+    // Flor central derecha (Altura media)
+    crearFlorImagen(fragmento, floresInfo[0], 65, 20, 0.7, 10, 10);    
+    // LA REINA (El punto más alto, al centro)
+    crearFlorImagen(fragmento, floresInfo[0], 50, 115, 0, 0, 15);    
+
+    // CAPA 4: FRENTE (Amapolas - Rellenan la base de forma orgánica)
+    // hAdj negativo para que sean pequeñas y cubran la base
+    const posicionesAmapolas = [18, 33, 50, 67, 82];
+    posicionesAmapolas.forEach((pos, i) => {
+        const variacionAltura = -35 + (Math.random() * 10); // Un toque de aleatoriedad
+        crearFlorImagen(fragmento, floresInfo[3], pos, variacionAltura, i * 0.1, 0, 25);
     });
 
     cont.appendChild(fragmento);
@@ -70,7 +86,21 @@ function crearFlorImagen(cont, info, x, hAdj, delay, ang, z) {
     const img = document.createElement('img');
     img.src = info.src;
     img.className = 'flower-img';
-    img.style.cssText = `left:${x}%; height:${info.h + hAdj}px; z-index:${z}; transform: translateX(-50%) rotate(${ang}deg); animation-delay:${delay}s;`;
+    
+    const esMovil = window.innerWidth < 600;
+    const factorEscala = esMovil ? 0.65 : 1.0; 
+    
+    // La altura final es la base + el ajuste, escalado por el dispositivo
+    const alturaFinal = (info.h + hAdj) * factorEscala;
+    
+    img.style.cssText = `
+        left: ${x}%; 
+        height: ${alturaFinal}px; 
+        z-index: ${z}; 
+        transform: translateX(-50%) rotate(${ang}deg); 
+        animation-delay: ${delay}s;
+    `;
+    
     img.onload = () => img.style.opacity = '1';
     cont.appendChild(img);
 }
@@ -86,8 +116,10 @@ function crearEnjambreCorazon(contenedor) {
         const t = (i / cant) * (2 * Math.PI);
         const x = 16 * Math.pow(Math.sin(t), 3);
         const y = -(13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t));
-        p.style.left = (x * 6.5) + 'px';
-        p.style.top = (y * 6.5) + 'px';
+        
+        const escalaCorazon = window.innerWidth < 600 ? 5.5 : 6.5;
+        p.style.left = (x * escalaCorazon) + 'px';
+        p.style.top = (y * escalaCorazon) + 'px';
         p.style.animationDelay = (Math.random() * 3) + 's';
         wrapper.appendChild(p);
     }
@@ -139,14 +171,9 @@ async function escribirPoema() {
         let i = 0;
         function type() {
             if (i < texto.length) {
-                // Insertamos letra o salto de línea
                 cont.innerHTML += (texto[i] === "\n" || texto[i] === "\r") ? "<br>" : texto[i];
                 i++;
-
-                // Lógica de Scroll Automático:
-                // Movemos el scroll del contenedor (.poema) al máximo de su altura actual
                 cajaCarta.scrollTop = cajaCarta.scrollHeight;
-
                 setTimeout(type, 55);
             }
         }
@@ -180,14 +207,10 @@ async function cargarChat() {
                     const audioEle = document.createElement('audio');
                     audioEle.src = reg.fields.AudioUrl;
                     audioEle.controls = true;
-                    audioEle.preload = "metadata";
                     audioEle.style.width = "100%";
                     audioEle.style.display = "block";
-
                     audioEle.onplay = () => { if (musicaFondo) suavizarVolumen(musicaFondo, 0.1); };
                     audioEle.onpause = () => { if (musicaFondo) suavizarVolumen(musicaFondo, 1.0); };
-                    audioEle.onended = () => { if (musicaFondo) suavizarVolumen(musicaFondo, 1.0); };
-
                     div.appendChild(audioEle);
                 } else {
                     div.innerText = reg.fields.Mensaje;
@@ -212,6 +235,10 @@ function revelarChat() {
         chatObj.style.display = 'block';
         setTimeout(() => { chatObj.classList.add('mostrar'); cargarChat(); }, 50);
     }
+}
+
+function cerrarChat() {
+    revelarChat();
 }
 
 async function enviarMensajeFinal(texto, urlAudio = null) {
@@ -301,14 +328,12 @@ async function subirAudioACloudinary() {
 function suavizarVolumen(elementoAudio, volumenObjetivo) {
     const paso = 0.05; 
     const intervalo = 50; 
-
     let fade = setInterval(() => {
         if (elementoAudio.volume < volumenObjetivo) {
             elementoAudio.volume = Math.min(elementoAudio.volume + paso, volumenObjetivo);
         } else {
             elementoAudio.volume = Math.max(elementoAudio.volume - paso, volumenObjetivo);
         }
-
         if (Math.abs(elementoAudio.volume - volumenObjetivo) < 0.01) {
             elementoAudio.volume = volumenObjetivo;
             clearInterval(fade);
