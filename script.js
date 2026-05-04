@@ -29,45 +29,38 @@ function iniciarRegalo() {
         setTimeout(() => overlay.style.display = 'none', 800);
     }
 
-    if (musica) musica.play().catch(() => console.log("Clic necesario para audio"));
+    if (musica) musica.play().catch(() => console.log("Clic para audio necesario"));
 
     crearLuciernagasFondo();
     construirRamo();
     
-    // Pétalos cayendo
     setInterval(() => { if (!document.hidden) crearPetalo(); }, 1200);
 
-    // Activación del ramo y el poema con un ligero retraso
     setTimeout(() => {
-        if(gardenFrente) gardenFrente.classList.add('activo'); 
+        if(gardenFrente) gardenFrente.style.bottom = '0';
         escribirPoema(); 
     }, 500);
 }
 
-// --- 3. CONSTRUCCIÓN DEL RAMO (DISTRIBUCIÓN DE ALTURAS MAESTRA) ---
+// --- 3. CONSTRUCCIÓN DEL JARDÍN ---
 function construirRamo() {
     const cont = document.getElementById('garden-frente');
     if (!cont) return;
-    cont.innerHTML = ''; // Limpieza total antes de construir
+
+    const elementosPrevios = cont.querySelectorAll('.flower-img, .enjambre-wrapper');
+    elementosPrevios.forEach(el => el.remove());
 
     const fragmento = document.createDocumentFragment();
     
-    // NIVEL 1: FONDO (Lirios y Campanulas - Alturas medias para enmarcar)
-    crearFlorImagen(fragmento, floresInfo[1], 10, 50, 0.6, -15, 5);  // Campanula Izq
-    crearFlorImagen(fragmento, floresInfo[2], 90, 60, 0.9, 15, 5);  // Lirio Der
-    
+    crearFlorImagen(fragmento, floresInfo[1], 15, 20, 0.5, -20, 5);
+    crearFlorImagen(fragmento, floresInfo[2], 85, 30, 0.8, 20, 5);
     crearEnjambreCorazon(fragmento);
-
-    // NIVEL 2: MEDIO (Flor Central - Escalonamiento drástico corregido)
-    crearFlorImagen(fragmento, floresInfo[0], 28, -50, 0.4, -10, 10); // Flor baja a la izq
-    crearFlorImagen(fragmento, floresInfo[0], 72, 10, 0.7, 10, 10);    // Flor media a la der
-    crearFlorImagen(fragmento, floresInfo[0], 50, 135, 0, 0, 15);    // LA REINA (Punto más alto, centro)
+    crearFlorImagen(fragmento, floresInfo[0], 40, 15, 0.4, -8, 10);
+    crearFlorImagen(fragmento, floresInfo[0], 60, 15, 0.7, 8, 10);
+    crearFlorImagen(fragmento, floresInfo[0], 50, 60, 0, 0, 15);
     
-    // NIVEL 3: FRENTE (Amapolas - Muy bajas para rellenar la base sin tapar)
-    const posicionesAmapolas = [20, 35, 50, 65, 80];
-    posicionesAmapolas.forEach((pos, i) => {
-        // hAdj negativo (-65) para asegurar que se queden abajo
-        crearFlorImagen(fragmento, floresInfo[3], pos, -65, i * 0.1, 0, 20);
+    [15, 32, 50, 68, 85].forEach((pos, i) => {
+        crearFlorImagen(fragmento, floresInfo[3], pos, 10, i * 0.1, 0, 20);
     });
 
     cont.appendChild(fragmento);
@@ -77,22 +70,7 @@ function crearFlorImagen(cont, info, x, hAdj, delay, ang, z) {
     const img = document.createElement('img');
     img.src = info.src;
     img.className = 'flower-img';
-    
-    const esMovil = window.innerWidth < 600;
-    // Factor de escala en móvil un poco más reducido para evitar el amontonamiento horizontal
-    const factorEscala = esMovil ? 0.62 : 1.0; 
-    
-    // Calculamos la altura final sumando el ajuste drástico
-    const alturaFinal = (info.h * factorEscala) + hAdj;
-    
-    img.style.cssText = `
-        left: ${x}%; 
-        height: ${alturaFinal}px; 
-        z-index: ${z}; 
-        transform: translateX(-50%) rotate(${ang}deg); 
-        animation-delay: ${delay}s;
-    `;
-    
+    img.style.cssText = `left:${x}%; height:${info.h + hAdj}px; z-index:${z}; transform: translateX(-50%) rotate(${ang}deg); animation-delay:${delay}s;`;
     img.onload = () => img.style.opacity = '1';
     cont.appendChild(img);
 }
@@ -108,11 +86,8 @@ function crearEnjambreCorazon(contenedor) {
         const t = (i / cant) * (2 * Math.PI);
         const x = 16 * Math.pow(Math.sin(t), 3);
         const y = -(13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t));
-        
-        // Escala del corazón para móvil
-        const escalaCorazon = window.innerWidth < 600 ? 5.5 : 6.5;
-        p.style.left = (x * escalaCorazon) + 'px';
-        p.style.top = (y * escalaCorazon) + 'px';
+        p.style.left = (x * 6.5) + 'px';
+        p.style.top = (y * 6.5) + 'px';
         p.style.animationDelay = (Math.random() * 3) + 's';
         wrapper.appendChild(p);
     }
