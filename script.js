@@ -41,7 +41,7 @@ function iniciarRegalo() {
     }, 500);
 }
 
-// --- 3. CONSTRUCCIÓN DEL JARDÍN (PERSPECTIVA CORREGIDA) ---
+// --- 3. CONSTRUCCIÓN DEL JARDÍN (PERSPECTIVA Y TAMAÑOS CORREGIDOS) ---
 function construirRamo() {
     const cont = document.getElementById('garden-frente');
     if (!cont) return;
@@ -51,29 +51,30 @@ function construirRamo() {
 
     const fragmento = document.createDocumentFragment();
     
-    // CAPA 1: FONDO (Lirios y Campanulas - Más altas y atrás)
-    crearFlorImagen(fragmento, floresInfo[1], 15, 80, 0.5, -12, 5, '2vh');  
-    crearFlorImagen(fragmento, floresInfo[2], 85, 90, 0.8, 12, 5, '2vh');   
+    // CAPA 1: FONDO (Campanulas y Lirios)
+    crearFlorImagen(fragmento, floresInfo[1], 15, 30, 0.5, -12, 5, '3vh');  
+    crearFlorImagen(fragmento, floresInfo[2], 85, 40, 0.8, 12, 5, '3vh');   
     
     // CAPA 2: CORAZÓN
     crearEnjambreCorazon(fragmento);
 
-    // CAPA 3: CENTRAL (Flores medianas escalonadas)
-    crearFlorImagen(fragmento, floresInfo[0], 30, 20, 0.4, -8, 10, '5vh'); 
-    crearFlorImagen(fragmento, floresInfo[0], 70, 30, 0.7, 8, 10, '5vh');    
-    crearFlorImagen(fragmento, floresInfo[0], 50, 150, 0, 0, 15, '6vh'); // LA REINA (Central alta)
+    // CAPA 3: CENTRAL (Flores Amarillas)
+    crearFlorImagen(fragmento, floresInfo[0], 35, -20, 0.4, -8, 10, '5vh'); 
+    crearFlorImagen(fragmento, floresInfo[0], 70, 10, 0.7, 8, 10, '5vh');    
+    crearFlorImagen(fragmento, floresInfo[0], 50, 140, 0, 0, 15, '6vh'); // LA REINA (Alta)
 
-    // CAPA 4: FRENTE (Amapolas - Más pequeñas para crear profundidad)
+    // CAPA 4: FRENTE (Amapolas Rojas - Recuperan tamaño y visibilidad)
     const configAmapolas = [
-        {pos: 15, alt: -60, ang: -5},
-        {pos: 35, alt: -70, ang: 3},
-        {pos: 50, alt: -55, ang: 0},
-        {pos: 65, alt: -75, ang: -2},
-        {pos: 85, alt: -65, ang: 5}
+        {pos: 12, alt: -25, ang: -8},
+        {pos: 32, alt: -35, ang: 4},
+        {pos: 50, alt: -20, ang: 0},
+        {pos: 68, alt: -30, ang: -4},
+        {pos: 88, alt: -25, ang: 8}
     ];
 
     configAmapolas.forEach((amapola, i) => {
-        crearFlorImagen(fragmento, floresInfo[3], amapola.pos, amapola.alt, i * 0.1, amapola.ang, 25, '8vh');
+        // baseBottom en 4vh para que no queden "enterradas"
+        crearFlorImagen(fragmento, floresInfo[3], amapola.pos, amapola.alt, i * 0.1, amapola.ang, 25, '4vh');
     });
 
     cont.appendChild(fragmento);
@@ -85,7 +86,7 @@ function crearFlorImagen(cont, info, x, hAdj, delay, ang, z, baseBottom) {
     img.className = 'flower-img';
     
     const esMovil = window.innerWidth < 600;
-    const factorEscala = esMovil ? 0.65 : 1.0; 
+    const factorEscala = esMovil ? 0.75 : 1.0; // Ajustado de 0.65 a 0.75 para que no se vean tan pequeñas
     const alturaFinal = (info.h + hAdj) * factorEscala;
     
     img.style.cssText = `
@@ -104,6 +105,8 @@ function crearFlorImagen(cont, info, x, hAdj, delay, ang, z, baseBottom) {
 function crearEnjambreCorazon(contenedor) {
     const wrapper = document.createElement('div');
     wrapper.className = 'enjambre-wrapper';
+    
+    // El posicionamiento vertical (55vh) se hereda del CSS que configuramos
     const cant = window.innerWidth < 600 ? 40 : 70; 
     
     for (let i = 0; i < cant; i++) {
