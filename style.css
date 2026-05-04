@@ -51,7 +51,7 @@ body {
 .enjambre-wrapper {
     position: absolute;
     left: 50%;
-    bottom: 58vh; 
+    bottom: 50vh; 
     z-index: 12;
     transform: translateX(-50%);
 }
