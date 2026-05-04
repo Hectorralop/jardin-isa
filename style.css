@@ -91,13 +91,15 @@ body {
 /* CORRECCIÓN FLORES: width auto mantiene proporción */
 .flower-img {
     position: absolute;
-    bottom: 0;
-    width: auto; 
-    object-fit: contain;
+    bottom: 8vh; 
+    width: auto !important; 
+    height: auto !important; 
     transform-origin: bottom center;
     animation: sway 4s ease-in-out infinite alternate;
     opacity: 0;
-    transition: opacity 1s ease-in-out;
+    transition: opacity 2s ease-in-out; 
+    user-select: none;
+    pointer-events: none;
 }
 
 @keyframes sway {
