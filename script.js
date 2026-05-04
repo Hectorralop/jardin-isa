@@ -13,9 +13,9 @@ const btnRecord = document.getElementById('btn-record');
 
 const floresInfo = [
     { src: 'flor_central.png', h: 300 }, 
-    { src: 'campanulas.png', h: 200 },   
-    { src: 'lirios.png', h: 220 },        
-    { src: 'amapolas.png', h: 130 }      
+    { src: 'campanulas.png', h: 220 },   
+    { src: 'lirios.png', h: 240 },        
+    { src: 'amapolas.png', h: 180 } // Aumentamos base de amapolas
 ];
 
 // --- 2. INICIO Y CONTROL DE INTERFAZ ---
@@ -41,7 +41,7 @@ function iniciarRegalo() {
     }, 500);
 }
 
-// --- 3. CONSTRUCCIÓN DEL JARDÍN (ACOMODO DE FELICITACIÓN) ---
+// --- 3. CONSTRUCCIÓN DEL JARDÍN (RE-CALIBRADO VISUAL) ---
 function construirRamo() {
     const cont = document.getElementById('garden-frente');
     if (!cont) return;
@@ -52,28 +52,30 @@ function construirRamo() {
     const fragmento = document.createDocumentFragment();
     
     // CAPA 1: FONDO (Campanulas y Lirios)
-    crearFlorImagen(fragmento, floresInfo[1], 15, 30, 0.5, -12, 5, '3vh');  
-    crearFlorImagen(fragmento, floresInfo[2], 85, 40, 0.8, 12, 5, '3vh');   
+    crearFlorImagen(fragmento, floresInfo[1], 15, 40, 0.5, -10, 5, '2vh');  
+    crearFlorImagen(fragmento, floresInfo[2], 85, 50, 0.8, 10, 5, '2vh');   
     
     // CAPA 2: CORAZÓN
     crearEnjambreCorazon(fragmento);
 
     // CAPA 3: CENTRAL (Flores Amarillas)
-    crearFlorImagen(fragmento, floresInfo[0], 35, -10, 0.4, -8, 10, '5vh'); 
-    crearFlorImagen(fragmento, floresInfo[0], 70, 20, 0.7, 8, 10, '5vh');    
-    crearFlorImagen(fragmento, floresInfo[0], 50, 140, 0, 0, 15, '6vh'); // LA REINA
+    // Reducimos el hAdj negativo para que no se vean "estiradas" hacia arriba de golpe
+    crearFlorImagen(fragmento, floresInfo[0], 30, 20, 0.4, -6, 10, '5vh'); 
+    crearFlorImagen(fragmento, floresInfo[0], 70, 40, 0.7, 6, 10, '5vh');    
+    crearFlorImagen(fragmento, floresInfo[0], 50, 150, 0, 0, 15, '6vh'); // LA REINA
 
-    // CAPA 4: FRENTE (Amapolas Rojas - Valores de altitud restaurados para mayor tamaño)
+    // CAPA 4: FRENTE (Amapolas Rojas - ¡Más grandes y escalonadas!)
     const configAmapolas = [
-        {pos: 12, alt: -15, ang: -8},
-        {pos: 32, alt: -20, ang: 4},
-        {pos: 50, alt: -10, ang: 0},
-        {pos: 68, alt: -18, ang: -4},
-        {pos: 88, alt: -15, ang: 8}
+        {pos: 10, alt: 20, ang: -8},
+        {pos: 30, alt: 40, ang: 4},
+        {pos: 50, alt: 30, ang: 0},
+        {pos: 70, alt: 45, ang: -4},
+        {pos: 90, alt: 25, ang: 8}
     ];
 
     configAmapolas.forEach((amapola, i) => {
-        crearFlorImagen(fragmento, floresInfo[3], amapola.pos, amapola.alt, i * 0.1, amapola.ang, 25, '4vh');
+        // Subimos el bottom de las amapolas para que se mezclen con los tallos de las amarillas
+        crearFlorImagen(fragmento, floresInfo[3], amapola.pos, amapola.alt, i * 0.1, amapola.ang, 25, '3vh');
     });
 
     cont.appendChild(fragmento);
@@ -85,8 +87,8 @@ function crearFlorImagen(cont, info, x, hAdj, delay, ang, z, baseBottom) {
     img.className = 'flower-img';
     
     const esMovil = window.innerWidth < 600;
-    // Restauramos a 0.9 para que en móvil recuperen su volumen original
-    const factorEscala = esMovil ? 0.9 : 1.0; 
+    // Factor de escala equilibrado para que no se vean desproporcionadas
+    const factorEscala = esMovil ? 0.85 : 1.0; 
     const alturaFinal = (info.h + hAdj) * factorEscala;
     
     img.style.cssText = `
@@ -105,7 +107,6 @@ function crearFlorImagen(cont, info, x, hAdj, delay, ang, z, baseBottom) {
 function crearEnjambreCorazon(contenedor) {
     const wrapper = document.createElement('div');
     wrapper.className = 'enjambre-wrapper';
-    
     const cant = window.innerWidth < 600 ? 40 : 70; 
     
     for (let i = 0; i < cant; i++) {
