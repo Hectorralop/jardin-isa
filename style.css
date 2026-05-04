@@ -76,7 +76,7 @@ body {
 .enjambre-wrapper {
     position: absolute;
     left: 50%;
-    bottom: 50vh; 
+    bottom: 55vh; /* Subimos de 50vh a 55vh */
     z-index: 12;
     transform: translateX(-50%);
 }
