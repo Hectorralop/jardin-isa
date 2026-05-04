@@ -1,4 +1,4 @@
-/* --- 1. ESTRUCTURA BASE Y RESET TOTAL --- */
+/* --- 1. ESTRUCTURA BASE Y RESET --- */
 * {
     box-sizing: border-box;
     -webkit-tap-highlight-color: transparent;
@@ -43,11 +43,32 @@ body {
 
 #garden-frente {
     z-index: 20;
-    bottom: -100%;
-    transition: bottom 3s cubic-bezier(0.25, 0.1, 0.25, 1);
+    /* El contenedor se queda fijo abajo para permitir 
+       que las flores usen sus propios valores de bottom */
+    bottom: 0; 
 }
 
-/* --- 3. ELEMENTOS DINÁMICOS --- */
+/* --- 3. FLORES Y DINÁMICOS --- */
+.flower-img {
+    position: absolute;
+    width: auto !important; 
+    height: auto !important;
+    transform-origin: bottom center;
+    /* Centrado horizontal base */
+    transform: translateX(-50%); 
+    animation: sway 4s ease-in-out infinite alternate;
+    opacity: 0;
+    /* Transición suave para cuando el JS cambie la opacidad y posición */
+    transition: opacity 2s ease-in-out, bottom 2s ease-out; 
+    user-select: none;
+    pointer-events: none;
+}
+
+@keyframes sway {
+    0% { transform: translateX(-50%) rotate(-2deg); }
+    100% { transform: translateX(-50%) rotate(2deg); }
+}
+
 .enjambre-wrapper {
     position: absolute;
     left: 50%;
@@ -86,25 +107,6 @@ body {
     0% { transform: translate(0, 0); opacity: 0.1; }
     50% { opacity: 0.8; }
     100% { transform: translate(60px, -90px); opacity: 0.1; }
-}
-
-/* CORRECCIÓN FLORES: width auto mantiene proporción */
-.flower-img {
-    position: absolute;
-    bottom: 8vh; 
-    width: auto !important; 
-    height: auto !important; 
-    transform-origin: bottom center;
-    animation: sway 4s ease-in-out infinite alternate;
-    opacity: 0;
-    transition: opacity 2s ease-in-out; 
-    user-select: none;
-    pointer-events: none;
-}
-
-@keyframes sway {
-    0% { transform: translateX(-50%) rotate(-2deg); }
-    100% { transform: translateX(-50%) rotate(2deg); }
 }
 
 .fall {
@@ -161,7 +163,7 @@ body {
     text-shadow: 0 0 10px #ffca28;
 }
 
-/* --- 5. POEMA Y CARTA (CON SCROLL) --- */
+/* --- 5. POEMA Y CARTA --- */
 .poema {
     position: absolute;
     top: 75px; 
@@ -169,13 +171,12 @@ body {
     transform: translateX(-50%);
     width: 85%;
     max-width: 420px;
+    max-height: 40vh; 
+    overflow-y: auto; 
     
-    /* LIMITACIÓN DE ALTURA Y SCROLL */
-    max-height: 40vh; /* Ocupará máximo el 40% de la pantalla */
-    overflow-y: auto; /* Activa el scroll vertical */
-    scrollbar-width: thin; /* Para Firefox */
-    scrollbar-color: rgba(255, 202, 40, 0.3) transparent;
-    scroll-behavior: smooth; 
+    /* Ocultar scrollbars */
+    scrollbar-width: none; 
+    -ms-overflow-style: none; 
     
     padding: 25px;
     background: rgba(0, 20, 20, 0.85);
@@ -190,14 +191,7 @@ body {
     transition: opacity 1.5s ease;
 }
 
-/* Estilo para la barra de scroll en Chrome/Safari */
-.poema::-webkit-scrollbar {
-    display: none; /* Oculta la barra en Chrome/Safari */
-}
-.poema {
-    -ms-overflow-style: none;  /* IE y Edge */
-    scrollbar-width: none;  /* Firefox */
-}
+.poema::-webkit-scrollbar { display: none; }
 
 .poema.visible { 
     opacity: 1; 
@@ -310,15 +304,13 @@ audio {
 
 /* --- 8. RESPONSIVE --- */
 @media (max-width: 600px) {
-    .flower-img { max-width: 40vw !important; }
+    .flower-img { max-width: 45vw !important; } /* Un poco más grandes para móvil */
     .titulo { font-size: 1.4rem; margin-top: 10px; }
     .poema { 
         top: 60px; 
         padding: 18px; 
         width: 92%; 
-        max-height: 35vh; /* Un poco más pequeño en móvil */
+        max-height: 35vh; 
     }
     .chat-container { bottom: 20px; width: 94%; }
-    .burbuja { min-width: 200px; }
-    #texto-poema { font-size: 1rem; }
 }
