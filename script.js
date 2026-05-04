@@ -39,13 +39,13 @@ function iniciarRegalo() {
 
     // Activación del ramo y el poema
     setTimeout(() => {
-        // Ajustamos el bottom para que el ramo suba desde la base
-        if(gardenFrente) gardenFrente.style.bottom = '0vh';
+        // Subimos el contenedor a 2vh para dar margen extra en móviles
+        if(gardenFrente) gardenFrente.style.bottom = '2vh';
         escribirPoema(); 
     }, 500);
 }
 
-// --- 3. CONSTRUCCIÓN DEL JARDÍN (EL RESULTADO QUE TE GUSTÓ) ---
+// --- 3. CONSTRUCCIÓN DEL JARDÍN (DISTRIBUCIÓN ESCALONADA) ---
 function construirRamo() {
     const cont = document.getElementById('garden-frente');
     if (!cont) return;
@@ -56,27 +56,29 @@ function construirRamo() {
 
     const fragmento = document.createDocumentFragment();
     
-    // CAPA 1: FONDO (Lirios y Campanulas - Enmarcan el ramo)
-    crearFlorImagen(fragmento, floresInfo[1], 15, 35, 0.5, -15, 5);  // Campanula Izq
-    crearFlorImagen(fragmento, floresInfo[2], 85, 45, 0.8, 15, 5);   // Lirio Der
+    // CAPA 1: FONDO (Enmarcan el ramo)
+    crearFlorImagen(fragmento, floresInfo[1], 15, 45, 0.5, -12, 5);  // Campanula Izq
+    crearFlorImagen(fragmento, floresInfo[2], 85, 55, 0.8, 12, 5);   // Lirio Der
     
-    // CAPA 2: INTERMEDIA (Efecto de lucérnagas)
+    // CAPA 2: INTERMEDIA (Efecto de corazón)
     crearEnjambreCorazon(fragmento);
 
     // CAPA 3: CENTRAL (Escalonamiento Drástico)
-    // Flor central izquierda (Bajita)
-    crearFlorImagen(fragmento, floresInfo[0], 35, -30, 0.4, -10, 10); 
-    // Flor central derecha (Altura media)
-    crearFlorImagen(fragmento, floresInfo[0], 65, 20, 0.7, 10, 10);    
-    // LA REINA (El punto más alto, al centro)
-    crearFlorImagen(fragmento, floresInfo[0], 50, 115, 0, 0, 15);    
+    crearFlorImagen(fragmento, floresInfo[0], 35, -40, 0.4, -8, 10); // Central Izq (Baja)
+    crearFlorImagen(fragmento, floresInfo[0], 65, 30, 0.7, 8, 10);   // Central Der (Media)
+    crearFlorImagen(fragmento, floresInfo[0], 50, 120, 0, 0, 15);    // LA REINA (Alta)
 
-    // CAPA 4: FRENTE (Amapolas - Rellenan la base de forma orgánica)
-    // hAdj negativo para que sean pequeñas y cubran la base
-    const posicionesAmapolas = [18, 33, 50, 67, 82];
-    posicionesAmapolas.forEach((pos, i) => {
-        const variacionAltura = -35 + (Math.random() * 10); // Un toque de aleatoriedad
-        crearFlorImagen(fragmento, floresInfo[3], pos, variacionAltura, i * 0.1, 0, 25);
+    // CAPA 4: FRENTE (Amapolas orgánicas)
+    const configAmapolas = [
+        {pos: 18, alt: -30, ang: -5},
+        {pos: 33, alt: -45, ang: 3},
+        {pos: 50, alt: -25, ang: 0},
+        {pos: 67, alt: -40, ang: -2},
+        {pos: 82, alt: -35, ang: 5}
+    ];
+
+    configAmapolas.forEach((amapola, i) => {
+        crearFlorImagen(fragmento, floresInfo[3], amapola.pos, amapola.alt, i * 0.1, amapola.ang, 25);
     });
 
     cont.appendChild(fragmento);
@@ -90,7 +92,6 @@ function crearFlorImagen(cont, info, x, hAdj, delay, ang, z) {
     const esMovil = window.innerWidth < 600;
     const factorEscala = esMovil ? 0.65 : 1.0; 
     
-    // La altura final es la base + el ajuste, escalado por el dispositivo
     const alturaFinal = (info.h + hAdj) * factorEscala;
     
     img.style.cssText = `
@@ -152,7 +153,7 @@ function crearPetalo() {
     setTimeout(() => p.remove(), dur * 1000);
 }
 
-// --- 5. CARTA DIARIA (CORREGIDO CON SCROLL AUTOMÁTICO) ---
+// --- 5. CARTA DIARIA ---
 async function escribirPoema() {
     const cont = document.getElementById('texto-poema');
     const cajaCarta = document.querySelector('.poema');
