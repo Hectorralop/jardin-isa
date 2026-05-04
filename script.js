@@ -34,55 +34,51 @@ function iniciarRegalo() {
     crearLuciernagasFondo();
     construirRamo();
     
-    // Pétalos cayendo
     setInterval(() => { if (!document.hidden) crearPetalo(); }, 1200);
 
-    // Activación del poema
     setTimeout(() => {
         escribirPoema(); 
     }, 500);
 }
 
-// --- 3. CONSTRUCCIÓN DEL JARDÍN (DISTRIBUCIÓN ESCALONADA) ---
+// --- 3. CONSTRUCCIÓN DEL JARDÍN (PERSPECTIVA CORREGIDA) ---
 function construirRamo() {
     const cont = document.getElementById('garden-frente');
     if (!cont) return;
 
-    // Limpieza total antes de construir
     const elementosPrevios = cont.querySelectorAll('.flower-img, .enjambre-wrapper');
     elementosPrevios.forEach(el => el.remove());
 
     const fragmento = document.createDocumentFragment();
     
-    // CAPA 1: FONDO (Base baja: 3vh)
-    crearFlorImagen(fragmento, floresInfo[1], 15, 45, 0.5, -12, 5, '3vh');  // Campanula Izq
-    crearFlorImagen(fragmento, floresInfo[2], 85, 55, 0.8, 12, 5, '3vh');   // Lirio Der
+    // CAPA 1: FONDO (Lirios y Campanulas - Más altas y atrás)
+    crearFlorImagen(fragmento, floresInfo[1], 15, 80, 0.5, -12, 5, '2vh');  
+    crearFlorImagen(fragmento, floresInfo[2], 85, 90, 0.8, 12, 5, '2vh');   
     
-    // CAPA 2: INTERMEDIA (Corazón de luciérnagas)
+    // CAPA 2: CORAZÓN
     crearEnjambreCorazon(fragmento);
 
-    // CAPA 3: CENTRAL (Base media: 6vh - 7vh)
-    crearFlorImagen(fragmento, floresInfo[0], 35, -40, 0.4, -8, 10, '6vh'); // Central Izq
-    crearFlorImagen(fragmento, floresInfo[0], 65, 30, 0.7, 8, 10, '6vh');   // Central Der
-    crearFlorImagen(fragmento, floresInfo[0], 50, 120, 0, 0, 15, '7vh');    // LA REINA (Alta)
+    // CAPA 3: CENTRAL (Flores medianas escalonadas)
+    crearFlorImagen(fragmento, floresInfo[0], 30, 20, 0.4, -8, 10, '5vh'); 
+    crearFlorImagen(fragmento, floresInfo[0], 70, 30, 0.7, 8, 10, '5vh');    
+    crearFlorImagen(fragmento, floresInfo[0], 50, 150, 0, 0, 15, '6vh'); // LA REINA (Central alta)
 
-    // CAPA 4: FRENTE (Base alta para amapolas: 10vh)
+    // CAPA 4: FRENTE (Amapolas - Más pequeñas para crear profundidad)
     const configAmapolas = [
-        {pos: 18, alt: -30, ang: -5},
-        {pos: 33, alt: -45, ang: 3},
-        {pos: 50, alt: -25, ang: 0},
-        {pos: 67, alt: -40, ang: -2},
-        {pos: 82, alt: -35, ang: 5}
+        {pos: 15, alt: -60, ang: -5},
+        {pos: 35, alt: -70, ang: 3},
+        {pos: 50, alt: -55, ang: 0},
+        {pos: 65, alt: -75, ang: -2},
+        {pos: 85, alt: -65, ang: 5}
     ];
 
     configAmapolas.forEach((amapola, i) => {
-        crearFlorImagen(fragmento, floresInfo[3], amapola.pos, amapola.alt, i * 0.1, amapola.ang, 25, '10vh');
+        crearFlorImagen(fragmento, floresInfo[3], amapola.pos, amapola.alt, i * 0.1, amapola.ang, 25, '8vh');
     });
 
     cont.appendChild(fragmento);
 }
 
-// Función corregida: ahora recibe y aplica 'baseBottom'
 function crearFlorImagen(cont, info, x, hAdj, delay, ang, z, baseBottom) {
     const img = document.createElement('img');
     img.src = info.src;
@@ -126,7 +122,7 @@ function crearEnjambreCorazon(contenedor) {
     contenedor.appendChild(wrapper);
 }
 
-// --- 4. EFECTOS AMBIENTALES ---
+// --- 4. AMBIENTE ---
 function crearLuciernagasFondo() {
     if (!gardenFondo) return;
     for (let i = 0; i < 12; i++) {
@@ -152,7 +148,7 @@ function crearPetalo() {
     setTimeout(() => p.remove(), dur * 1000);
 }
 
-// --- 5. CARTA DIARIA ---
+// --- 5. MENSAJES AIRTABLE ---
 async function escribirPoema() {
     const cont = document.getElementById('texto-poema');
     const cajaCarta = document.querySelector('.poema');
@@ -181,7 +177,6 @@ async function escribirPoema() {
     } catch (e) { cont.innerHTML = "Eres mi jardín favorito. ✨💘"; }
 }
 
-// --- 6. CHAT Y MENSAJES ---
 async function cargarChat() {
     try {
         const hoy = new Date().toISOString().split('T')[0];
@@ -191,147 +186,86 @@ async function cargarChat() {
         const response = await fetch(url, { headers: { Authorization: `Bearer ${AIRTABLE_API_KEY}` } });
         const data = await response.json();
         const historial = document.getElementById('historial-chat');
-        const musicaFondo = document.getElementById('musica'); 
-        
         if (!historial) return;
         historial.innerHTML = '';
 
-        if (!data.records || data.records.length === 0) {
-            historial.innerHTML = '<div style="text-align:center; color:rgba(255,255,255,0.3); font-size:0.8rem; margin-top:20px;">Escribe algo especial... ✨</div>';
-        } else {
-            data.records.forEach(reg => {
-                const div = document.createElement('div');
-                div.className = `burbuja ${reg.fields.Nombre === "El" ? "el" : "ella"}`;
-                
-                if (reg.fields.AudioUrl) {
-                    const audioEle = document.createElement('audio');
-                    audioEle.src = reg.fields.AudioUrl;
-                    audioEle.controls = true;
-                    audioEle.style.width = "100%";
-                    audioEle.style.display = "block";
-                    audioEle.onplay = () => { if (musicaFondo) suavizarVolumen(musicaFondo, 0.1); };
-                    audioEle.onpause = () => { if (musicaFondo) suavizarVolumen(musicaFondo, 1.0); };
-                    div.appendChild(audioEle);
-                } else {
-                    div.innerText = reg.fields.Mensaje;
-                }
-                historial.appendChild(div);
-            });
-        }
-        setTimeout(() => {
-            historial.scrollTo({ top: historial.scrollHeight, behavior: 'smooth' });
-        }, 200);
-    } catch (e) { console.error("Error chat:", e); }
+        data.records?.forEach(reg => {
+            const div = document.createElement('div');
+            div.className = `burbuja ${reg.fields.Nombre === "El" ? "el" : "ella"}`;
+            if (reg.fields.AudioUrl) {
+                const audio = document.createElement('audio');
+                audio.src = reg.fields.AudioUrl;
+                audio.controls = true;
+                div.appendChild(audio);
+            } else {
+                div.innerText = reg.fields.Mensaje;
+            }
+            historial.appendChild(div);
+        });
+        historial.scrollTop = historial.scrollHeight;
+    } catch (e) { console.error(e); }
 }
 
 function revelarChat() {
-    const chatObj = document.querySelector('.chat-container');
-    if (!chatObj) return;
-    
-    if (chatObj.classList.contains('mostrar')) {
-        chatObj.classList.remove('mostrar');
-        setTimeout(() => chatObj.style.display = 'none', 500);
-    } else {
-        chatObj.style.display = 'block';
-        setTimeout(() => { chatObj.classList.add('mostrar'); cargarChat(); }, 50);
-    }
+    const chat = document.querySelector('.chat-container');
+    if (!chat) return;
+    const isVisible = chat.classList.toggle('mostrar');
+    chat.style.display = isVisible ? 'block' : 'none';
+    if (isVisible) cargarChat();
 }
 
-async function enviarMensajeFinal(texto, urlAudio = null) {
-    try {
-        await fetch(`https://api.airtable.com/v0/${BASE_ID}/${TABLA_CHAT}`, {
-            method: 'POST',
-            headers: { Authorization: `Bearer ${AIRTABLE_API_KEY}`, 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                fields: { "Nombre": "El", "Mensaje": texto || "", "AudioUrl": urlAudio, "Fecha": new Date().toISOString() }
-            })
-        });
-        cargarChat();
-    } catch (e) { console.error("Error envío:", e); }
-}
-
-function enviarMensaje() {
+async function enviarMensaje() {
     const input = document.getElementById('nuevo-mensaje');
     if (!input || !input.value.trim()) return;
-    enviarMensajeFinal(input.value);
+    const texto = input.value;
     input.value = '';
+    
+    await fetch(`https://api.airtable.com/v0/${BASE_ID}/${TABLA_CHAT}`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${AIRTABLE_API_KEY}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ fields: { "Nombre": "El", "Mensaje": texto, "Fecha": new Date().toISOString() } })
+    });
+    cargarChat();
 }
 
-// --- 7. AUDIO Y GRABACIÓN ---
-if (btnRecord) {
-    btnRecord.addEventListener('mousedown', iniciarGrabacion);
-    btnRecord.addEventListener('mouseup', detenerGrabacion);
-    btnRecord.addEventListener('touchstart', (e) => { e.preventDefault(); iniciarGrabacion(); }, {passive: false});
-    btnRecord.addEventListener('touchend', (e) => { e.preventDefault(); detenerGrabacion(); }, {passive: false});
-}
-
+// --- 6. AUDIO ---
 async function iniciarGrabacion() {
-    try {
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        mediaRecorder = new MediaRecorder(stream);
-        audioChunks = [];
-        segundos = 0;
-        
-        const timerLabel = document.getElementById('timer-grabacion');
-        if (timerLabel) { timerLabel.innerText = "00:00"; timerLabel.style.display = "inline"; }
-        
-        timerInterval = setInterval(() => {
-            segundos++;
-            let min = Math.floor(segundos / 60).toString().padStart(2, '0');
-            let seg = (segundos % 60).toString().padStart(2, '0');
-            if (timerLabel) timerLabel.innerText = `${min}:${seg}`;
-        }, 1000);
-
-        mediaRecorder.ondataavailable = (e) => audioChunks.push(e.data);
-        mediaRecorder.onstop = subirAudioACloudinary;
-        mediaRecorder.start();
-        btnRecord.classList.add('grabando');
-    } catch (err) { alert("Micrófono no disponible."); }
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    mediaRecorder = new MediaRecorder(stream);
+    audioChunks = [];
+    mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+    mediaRecorder.onstop = subirAudio;
+    mediaRecorder.start();
+    btnRecord.classList.add('grabando');
 }
 
 function detenerGrabacion() {
-    if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+    if (mediaRecorder?.state === 'recording') {
         mediaRecorder.stop();
-        mediaRecorder.stream.getTracks().forEach(track => track.stop());
         btnRecord.classList.remove('grabando');
-        clearInterval(timerInterval);
-        const timerLabel = document.getElementById('timer-grabacion');
-        if (timerLabel) timerLabel.style.display = "none";
     }
 }
 
-async function subirAudioACloudinary() {
-    const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+async function subirAudio() {
+    const blob = new Blob(audioChunks, { type: 'audio/webm' });
     const formData = new FormData();
-    formData.append('file', audioBlob);
+    formData.append('file', blob);
     formData.append('upload_preset', CLOUDINARY_PRESET);
-    
-    const iconOriginal = btnRecord.innerHTML;
-    btnRecord.innerHTML = "⏳";
 
-    try {
-        const resp = await fetch(CLOUDINARY_URL, { method: 'POST', body: formData });
-        const data = await resp.json();
-        if (data.secure_url) await enviarMensajeFinal(null, data.secure_url);
-        btnRecord.innerHTML = iconOriginal;
-    } catch (err) { 
-        btnRecord.innerHTML = "❌"; 
-        setTimeout(() => btnRecord.innerHTML = iconOriginal, 2000); 
-    }
+    const resp = await fetch(CLOUDINARY_URL, { method: 'POST', body: formData });
+    const data = await resp.json();
+    
+    await fetch(`https://api.airtable.com/v0/${BASE_ID}/${TABLA_CHAT}`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${AIRTABLE_API_KEY}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ fields: { "Nombre": "El", "AudioUrl": data.secure_url, "Fecha": new Date().toISOString() } })
+    });
+    cargarChat();
 }
 
-function suavizarVolumen(elementoAudio, volumenObjetivo) {
-    const paso = 0.05; 
-    const intervalo = 50; 
-    let fade = setInterval(() => {
-        if (elementoAudio.volume < volumenObjetivo) {
-            elementoAudio.volume = Math.min(elementoAudio.volume + paso, volumenObjetivo);
-        } else {
-            elementoAudio.volume = Math.max(elementoAudio.volume - paso, volumenObjetivo);
-        }
-        if (Math.abs(elementoAudio.volume - volumenObjetivo) < 0.01) {
-            elementoAudio.volume = volumenObjetivo;
-            clearInterval(fade);
-        }
-    }, intervalo);
+if (btnRecord) {
+    btnRecord.onmousedown = iniciarGrabacion;
+    btnRecord.onmouseup = detenerGrabacion;
+    btnRecord.ontouchstart = e => { e.preventDefault(); iniciarGrabacion(); };
+    btnRecord.ontouchend = e => { e.preventDefault(); detenerGrabacion(); };
 }
