@@ -43,25 +43,29 @@ body {
 
 #garden-frente {
     z-index: 20;
-    /* El contenedor se queda fijo abajo para permitir 
-       que las flores usen sus propios valores de bottom */
     bottom: 0; 
 }
 
-/* --- 3. FLORES Y DINÁMICOS --- */
+/* --- 3. FLORES Y DINÁMICOS (CORREGIDO) --- */
 .flower-img {
     position: absolute;
-    width: auto !important; 
-    height: auto !important;
+    /* Dejamos que el JS controle width y height mediante el estilo en línea */
     transform-origin: bottom center;
-    /* Centrado horizontal base */
     transform: translateX(-50%); 
     animation: sway 4s ease-in-out infinite alternate;
     opacity: 0;
-    /* Transición suave para cuando el JS cambie la opacidad y posición */
-    transition: opacity 2s ease-in-out, bottom 2s ease-out; 
+    /* Transición suave para posición y aparición */
+    transition: opacity 2s ease-in-out, bottom 1.5s ease-out, height 1.5s ease-out; 
     user-select: none;
     pointer-events: none;
+    /* Mejora de visualización */
+    filter: drop-shadow(0 5px 10px rgba(0,0,0,0.3));
+}
+
+/* Efecto de profundidad: flores con z-index bajo se ven más oscuras */
+.flower-img[style*="z-index: 5"], 
+.flower-img[style*="z-index: 10"] {
+    filter: brightness(0.7) contrast(1.1) blur(0.5px);
 }
 
 @keyframes sway {
@@ -125,7 +129,7 @@ body {
     100% { transform: translateY(110vh) rotate(360deg) translateX(50px); opacity: 0; }
 }
 
-/* --- 4. INTERFAZ DE USUARIO (UI) --- */
+/* --- 4. UI --- */
 #overlay {
     position: fixed;
     top: 0; left: 0; width: 100%; height: 100%;
@@ -171,14 +175,11 @@ body {
     transform: translateX(-50%);
     width: 85%;
     max-width: 420px;
-    max-height: 40vh; 
+    max-height: 30vh; 
     overflow-y: auto; 
-    
-    /* Ocultar scrollbars */
     scrollbar-width: none; 
     -ms-overflow-style: none; 
-    
-    padding: 25px;
+    padding: 20px;
     background: rgba(0, 20, 20, 0.85);
     border-radius: 20px;
     backdrop-filter: blur(15px);
@@ -192,11 +193,7 @@ body {
 }
 
 .poema::-webkit-scrollbar { display: none; }
-
-.poema.visible { 
-    opacity: 1; 
-    visibility: visible;
-}
+.poema.visible { opacity: 1; visibility: visible; }
 
 #texto-poema { 
     color: #ffca28; 
@@ -205,10 +202,10 @@ body {
     font-style: italic;
 }
 
-/* --- 6. SISTEMA DE CHAT --- */
+/* --- 6. CHAT --- */
 .chat-container {
     position: fixed;
-    bottom: 4vh;
+    bottom: 20px;
     left: 50%;
     transform: translate(-50%, 0);
     width: 90%;
@@ -218,11 +215,11 @@ body {
     -webkit-backdrop-filter: blur(20px);
     border-radius: 24px;
     padding: 15px;
-    z-index: 200;
+    z-index: 250;
     border: 1px solid rgba(255, 202, 40, 0.4);
     display: none;
     opacity: 0;
-    transition: all 0.5s ease;
+    transition: all 0.4s ease;
 }
 
 .chat-container.mostrar { 
@@ -231,46 +228,31 @@ body {
 }
 
 #historial-chat {
-    max-height: 30vh;
+    max-height: 35vh;
     overflow-y: auto;
-    overscroll-behavior: contain;
-    -webkit-overflow-scrolling: touch;
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    gap: 12px;
     margin-bottom: 15px;
-    padding: 10px;
+    padding: 5px;
 }
 
 .burbuja { 
-    padding: 12px 16px; 
+    padding: 10px 14px; 
     border-radius: 18px; 
-    font-size: 0.95rem; 
-    max-width: 85%; 
-    min-width: 220px; 
-    word-wrap: break-word;
-    display: flex;
-    flex-direction: column;
+    font-size: 0.9rem; 
+    max-width: 80%; 
 }
 
-.burbuja.el { align-self: flex-end; background: #ffca28; color: #000; border-bottom-right-radius: 4px; }
-.burbuja.ella { align-self: flex-start; background: rgba(255, 255, 255, 0.95); color: #111; border-bottom-left-radius: 4px; }
+.burbuja.el { align-self: flex-end; background: #ffca28; color: #000; }
+.burbuja.ella { align-self: flex-start; background: rgba(255, 255, 255, 0.2); color: #fff; }
 
-audio { 
-    width: 100% !important; 
-    height: 40px; 
-    margin-top: 8px;
-    filter: invert(85%) hue-rotate(180deg) brightness(1.2); 
-    display: block;
-}
-
-/* --- 7. INPUTS Y CONTROLES --- */
+/* --- 7. CONTROLES --- */
 .input-area { 
     display: flex; 
-    align-items: center; 
     gap: 10px; 
-    padding: 8px 12px; 
     background: rgba(255, 255, 255, 0.1); 
+    padding: 10px; 
     border-radius: 30px; 
 }
 
@@ -280,37 +262,21 @@ audio {
     border: none; 
     color: white; 
     outline: none; 
-    font-size: 1rem; 
 }
 
-.btn-audio, .btn-send { 
-    width: 42px; 
-    height: 42px; 
+.btn-send { 
+    background: #ffca28; 
     border: none; 
-    background: none; 
-    cursor: pointer; 
-    display: flex; 
-    align-items: center; 
-    justify-content: center; 
-}
-
-.btn-send { background: #ffca28; border-radius: 50%; color: #000; }
-.btn-audio.grabando { color: #ff4b2b; animation: latido 1.2s infinite; }
-
-@keyframes latido {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.3); }
+    width: 35px; 
+    height: 35px; 
+    border-radius: 50%; 
 }
 
 /* --- 8. RESPONSIVE --- */
 @media (max-width: 600px) {
-    .flower-img { max-width: 45vw !important; } /* Un poco más grandes para móvil */
-    .titulo { font-size: 1.4rem; margin-top: 10px; }
-    .poema { 
-        top: 60px; 
-        padding: 18px; 
-        width: 92%; 
-        max-height: 35vh; 
+    .titulo { font-size: 1.3rem; }
+    .flower-img { 
+        /* En móvil limitamos un poco el tamaño máximo para que no tape el corazón */
+        max-height: 40vh !important; 
     }
-    .chat-container { bottom: 20px; width: 94%; }
 }
