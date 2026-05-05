@@ -317,9 +317,8 @@ body {
     50% { transform: scale(1.25); box-shadow: 0 0 0 10px rgba(255, 82, 82, 0); }
 }
 
-/* --- 8. REPRODUCTOR DE AUDIO LIMPIO Y ADAPTABLE --- */
+/* --- 8. REPRODUCTOR CALIBRADO AL COLOR #ffca28 --- */
 
-/* Ocultamos los botones nativos de volumen y silencio */
 audio::-webkit-media-controls-mute-button,
 audio::-webkit-media-controls-volume-slider {
     display: none !important;
@@ -334,13 +333,18 @@ audio {
     display: block;
     margin: 4px 0; 
     
-    /* FILTRO MEJORADO PARA EVITAR EL NEGRO TOTAL Y QUE SE VEA CLARO */
-    filter: invert(90%) brightness(2.2) contrast(1.1) sepia(100%) hue-rotate(30deg) saturate(200%);
+    /* FILTRO CALIBRADO: 
+       1. Invertimos para volverlo oscuro.
+       2. Hue-rotate 180 para ajustar la base.
+       3. Sepia 100% y Saturate 500% para forzar el color cálido.
+       4. Hue-rotate final para llegar al amarillo #ffca28. 
+    */
+    filter: invert(100%) hue-rotate(180deg) brightness(1.5) contrast(1.2) sepia(100%) saturate(500%) hue-rotate(-15deg);
     
-    /* Recorte de 40px a la derecha para quitar los puntos */
+    /* Recorte de 40px para quitar los puntos */
     clip-path: inset(0 40px 0 0 round 20px);
     
-    /* Centrado visual compensando el recorte */
+    /* Centrado visual */
     transform: translateX(12px);
 }
 
