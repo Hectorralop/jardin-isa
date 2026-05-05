@@ -308,7 +308,7 @@ body {
     box-shadow: 0 0 10px rgba(255, 202, 40, 0.4);
 }
 
-/* --- 8. REPRODUCTOR REFINADO Y ELEGANTE --- */
+/* --- 8. REPRODUCTOR REFINADO (SIN VOLUMEN NI OPCIONES) --- */
 
 audio {
     width: 210px;
@@ -319,22 +319,27 @@ audio {
     /* Filtro para suavizar y dar color ámbar a los iconos */
     filter: sepia(100%) saturate(300%) brightness(1.1) hue-rotate(-10deg);
     transition: all 0.3s ease;
+    /* Recorte preventivo */
+    clip-path: inset(0 0 0 0 round 18px);
 }
 
-/* Quitamos los botones que estorban */
+/* Eliminación de controles de volumen */
+audio::-webkit-media-controls-volume-control-container,
 audio::-webkit-media-controls-mute-button,
-audio::-webkit-media-controls-volume-slider,
-audio::-webkit-media-controls-timeline-container {
-    background-color: transparent;
+audio::-webkit-media-controls-volume-slider {
+    display: none !important;
+    -webkit-appearance: none !important;
 }
 
-/* Escondemos los tres puntos de opciones de Chrome */
+/* Ocultar botón de tres puntos (opciones) */
 audio::-webkit-media-controls-enclosure {
-    padding: 0 10px;
+    overflow: hidden !important;
 }
 
 audio::-webkit-media-controls-panel {
-    background-color: rgba(255, 202, 40, 0.2);
+    /* Ensanchamos el panel para empujar el botón de opciones fuera del área visible */
+    width: calc(100% + 35px); 
+    background-color: rgba(255, 202, 40, 0.1);
 }
 
 /* --- 9. RESPONSIVE --- */
