@@ -10,11 +10,12 @@ let mediaRecorder, audioChunks = [], timerInterval, segundos = 0;
 const gardenFondo = document.getElementById('garden-fondo');
 const gardenFrente = document.getElementById('garden-frente');
 const btnRecord = document.getElementById('btn-record');
+const timerDisplay = document.getElementById('timer-grabacion');
 
 const floresInfo = [
     { src: 'flor_central.png', h: 300 }, 
     { src: 'campanulas.png', h: 230 },   
-    { src: 'lirios.png', h: 250 },        
+    { src: 'lirios.png', h: 250 },         
     { src: 'amapolas.png', h: 160 }      
 ];
 
@@ -41,7 +42,7 @@ function iniciarRegalo() {
     }, 500);
 }
 
-// --- 3. CONSTRUCCIÓN DEL JARDÍN (ALTURAS CALIBRADAS) ---
+// --- 3. CONSTRUCCIÓN DEL JARDÍN ---
 function construirRamo() {
     const cont = document.getElementById('garden-frente');
     if (!cont) return;
@@ -51,22 +52,15 @@ function construirRamo() {
 
     const fragmento = document.createDocumentFragment();
     
-    // CAPA 1: FONDO (Lirios y Campanulas laterales)
     crearFlorImagen(fragmento, floresInfo[1], 12, 75, 0.5, -12, 5, '2vh');  
     crearFlorImagen(fragmento, floresInfo[2], 88, 85, 0.8, 12, 5, '2vh');   
     
-    // CAPA 2: CORAZÓN DE PARTÍCULAS
     crearEnjambreCorazon(fragmento);
 
-    // CAPA 3: CENTRAL (Escalonamiento de Flores Amarillas)
-    // Amarilla lateral izquierda
     crearFlorImagen(fragmento, floresInfo[0], 32, 55, 0.4, -8, 10, '5vh'); 
-    // Amarilla lateral derecha
     crearFlorImagen(fragmento, floresInfo[0], 68, 70, 0.7, 8, 10, '5vh');    
-    // LA REINA: Altura reducida a 85 para que no atraviese el corazón
     crearFlorImagen(fragmento, floresInfo[0], 50, 85, 0, 0, 15, '6vh'); 
 
-    // CAPA 4: FRENTE (Amapolas Rojas)
     const configAmapolas = [
         {pos: 15, alt: 15, ang: -5},
         {pos: 35, alt: 30, ang: 3},
@@ -151,7 +145,7 @@ function crearPetalo() {
     setTimeout(() => p.remove(), dur * 1000);
 }
 
-// --- 5. MENSAJES AIRTABLE ---
+// --- 5. MENSAJES Y CHAT ---
 async function escribirPoema() {
     const cont = document.getElementById('texto-poema');
     const cajaCarta = document.querySelector('.poema');
@@ -217,6 +211,14 @@ function revelarChat() {
     if (isVisible) cargarChat();
 }
 
+function cerrarChat() {
+    const chat = document.querySelector('.chat-container');
+    if (chat) {
+        chat.classList.remove('mostrar');
+        chat.style.display = 'none';
+    }
+}
+
 async function enviarMensaje() {
     const input = document.getElementById('nuevo-mensaje');
     if (!input || !input.value.trim()) return;
@@ -231,44 +233,85 @@ async function enviarMensaje() {
     cargarChat();
 }
 
-// --- 6. AUDIO ---
+// --- 6. LÓGICA DE GRABACIÓN TIPO WHATSAPP ---
+
+function iniciarContador() {
+    segundos = 0;
+    if (timerDisplay) {
+        timerDisplay.innerText = "00:00";
+        timerDisplay.style.display = 'inline';
+    }
+    
+    timerInterval = setInterval(() => {
+        segundos++;
+        const mins = Math.floor(segundos / 60).toString().padStart(2, '0');
+        const secs = (segundos % 60).toString().padStart(2, '0');
+        if (timerDisplay) timerDisplay.innerText = `${mins}:${secs}`;
+    }, 1000);
+}
+
 async function iniciarGrabacion() {
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    mediaRecorder = new MediaRecorder(stream);
-    audioChunks = [];
-    mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
-    mediaRecorder.onstop = subirAudio;
-    mediaRecorder.start();
-    btnRecord.classList.add('grabando');
+    try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        mediaRecorder = new MediaRecorder(stream);
+        audioChunks = [];
+        
+        mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+        mediaRecorder.onstop = subirAudio;
+        
+        iniciarContador();
+        mediaRecorder.start();
+        btnRecord.classList.add('grabando');
+    } catch (err) {
+        console.error("Acceso al micro denegado:", err);
+    }
 }
 
 function detenerGrabacion() {
     if (mediaRecorder?.state === 'recording') {
         mediaRecorder.stop();
         btnRecord.classList.remove('grabando');
+        clearInterval(timerInterval);
+        if (timerDisplay) timerDisplay.style.display = 'none';
     }
 }
 
 async function subirAudio() {
+    if (audioChunks.length === 0) return;
+    
     const blob = new Blob(audioChunks, { type: 'audio/webm' });
     const formData = new FormData();
     formData.append('file', blob);
     formData.append('upload_preset', CLOUDINARY_PRESET);
 
-    const resp = await fetch(CLOUDINARY_URL, { method: 'POST', body: formData });
-    const data = await resp.json();
-    
-    await fetch(`https://api.airtable.com/v0/${BASE_ID}/${TABLA_CHAT}`, {
-        method: 'POST',
-        headers: { Authorization: `Bearer ${AIRTABLE_API_KEY}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ fields: { "Nombre": "El", "AudioUrl": data.secure_url, "Fecha": new Date().toISOString() } })
-    });
-    cargarChat();
+    try {
+        const resp = await fetch(CLOUDINARY_URL, { method: 'POST', body: formData });
+        const data = await resp.json();
+        
+        await fetch(`https://api.airtable.com/v0/${BASE_ID}/${TABLA_CHAT}`, {
+            method: 'POST',
+            headers: { Authorization: `Bearer ${AIRTABLE_API_KEY}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ fields: { "Nombre": "El", "AudioUrl": data.secure_url, "Fecha": new Date().toISOString() } })
+        });
+        cargarChat();
+    } catch (e) {
+        console.error("Error al subir audio:", e);
+    }
 }
 
+// ASIGNACIÓN DE EVENTOS (Móvil + PC)
 if (btnRecord) {
-    btnRecord.onmousedown = iniciarGrabacion;
-    btnRecord.onmouseup = detenerGrabacion;
-    btnRecord.ontouchstart = e => { e.preventDefault(); iniciarGrabacion(); };
-    btnRecord.ontouchend = e => { e.preventDefault(); detenerGrabacion(); };
+    // Eventos Mouse (PC)
+    btnRecord.addEventListener('mousedown', iniciarGrabacion);
+    btnRecord.addEventListener('mouseup', detenerGrabacion);
+    
+    // Eventos Touch (Móvil)
+    btnRecord.addEventListener('touchstart', (e) => {
+        e.preventDefault(); 
+        iniciarGrabacion();
+    });
+    btnRecord.addEventListener('touchend', (e) => {
+        e.preventDefault();
+        detenerGrabacion();
+    });
 }
