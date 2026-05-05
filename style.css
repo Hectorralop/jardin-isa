@@ -158,7 +158,7 @@ body {
     z-index: 100;
     position: relative;
     text-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
-    pointer-events: none !important; /* Permite clic en hijos */
+    pointer-events: none !important;
 }
 
 .nombre {
@@ -248,53 +248,69 @@ body {
 .burbuja.el { align-self: flex-end; background: #ffca28; color: #000; }
 .burbuja.ella { align-self: flex-start; background: rgba(255, 255, 255, 0.2); color: #fff; }
 
-/* --- 7. CONTROLES Y AUDIO --- */
+/* --- 7. CONTROLES Y AUDIO (OPTIMIZADO MÓVIL) --- */
 .input-area { 
     display: flex; 
     align-items: center;
-    gap: 10px; 
+    gap: 8px; 
     background: rgba(255, 255, 255, 0.1); 
     padding: 10px; 
     border-radius: 30px; 
 }
 
-#nuevo-mensaje { flex: 1; background: transparent; border: none; color: white; outline: none; }
+#nuevo-mensaje { 
+    flex: 1; 
+    background: transparent; 
+    border: none; 
+    color: white; 
+    outline: none; 
+    min-width: 0; /* Permite que el input se encoja si es necesario */
+}
 
 .btn-send, .btn-audio { 
     background: #ffca28; 
     border: none; 
-    width: 35px; 
-    height: 35px; 
+    width: 42px; 
+    height: 42px;
+    min-width: 42px; /* Bloquea el tamaño en móviles */
     border-radius: 50%; 
     cursor: pointer;
     display: flex;
     justify-content: center;
     align-items: center;
+    flex-shrink: 0; /* Evita deformaciones */
+    transition: transform 0.2s, background-color 0.3s;
+    touch-action: none; /* Vital para que el móvil no interrumpa la grabación */
+    user-select: none;
 }
 
 /* Estado de Grabación */
 #timer-grabacion {
     color: #ff5252;
     font-weight: bold;
-    font-family: monospace;
-    margin-right: 5px;
-    font-size: 0.85rem;
+    font-family: 'Courier New', Courier, monospace;
+    margin-right: 4px;
+    font-size: 0.9rem;
+    white-space: nowrap;
 }
 
 .btn-audio.grabando {
     background: #ff5252 !important;
-    animation: pulsoGrabando 1.5s infinite;
-    color: white;
+    color: white !important;
+    transform: scale(1.1);
+    animation: pulsoGraba 1.2s infinite ease-in-out;
 }
 
-@keyframes pulsoGrabando {
-    0% { box-shadow: 0 0 0 0 rgba(255, 82, 82, 0.7); }
-    70% { box-shadow: 0 0 0 12px rgba(255, 82, 82, 0); }
-    100% { box-shadow: 0 0 0 0 rgba(255, 82, 82, 0); }
+@keyframes pulsoGraba {
+    0%, 100% { transform: scale(1.1); box-shadow: 0 0 0 0 rgba(255, 82, 82, 0.7); }
+    50% { transform: scale(1.25); box-shadow: 0 0 0 10px rgba(255, 82, 82, 0); }
 }
 
 /* --- 8. RESPONSIVE --- */
 @media (max-width: 600px) {
     .titulo { font-size: 1.3rem; }
     .flower-img { max-height: none !important; max-width: 140px !important; }
+    .chat-container { width: 95%; bottom: 10px; }
+    .input-area { padding: 8px; gap: 5px; }
+    .btn-send, .btn-audio { width: 38px; height: 38px; min-width: 38px; }
 }
