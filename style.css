@@ -308,38 +308,33 @@ body {
     box-shadow: 0 0 10px rgba(255, 202, 40, 0.4);
 }
 
-/* --- 8. REPRODUCTOR REFINADO (SIN VOLUMEN NI OPCIONES) --- */
+/* --- 8. REPRODUCTOR REFINADO (HACK DEFINITIVO PARA 3 PUNTOS) --- */
 
-audio {
-    width: 210px;
+/* Contenedor que hará el recorte */
+.burbuja audio {
+    width: 175px; /* Reducimos el ancho visible */
     height: 36px;
     border-radius: 18px;
-    /* Efecto cristal translúcido */
     background-color: rgba(255, 202, 40, 0.15); 
-    /* Filtro para suavizar y dar color ámbar a los iconos */
     filter: sepia(100%) saturate(300%) brightness(1.1) hue-rotate(-10deg);
-    transition: all 0.3s ease;
-    /* Recorte preventivo */
-    clip-path: inset(0 0 0 0 round 18px);
+    
+    /* Esta es la clave: ocultamos lo que se salga de los 175px */
+    overflow: hidden; 
 }
 
-/* Eliminación de controles de volumen */
+/* Estilos para navegadores Webkit (Chrome/Edge/Safari) */
+audio::-webkit-media-controls-panel {
+    /* Hacemos el panel interno más ancho que el audio para empujar volumen y puntos afuera */
+    width: calc(100% + 110px) !important; 
+    background-color: rgba(255, 202, 40, 0.1);
+    margin-left: -5px;
+}
+
+/* Intentamos ocultarlos también por nombre por si acaso */
 audio::-webkit-media-controls-volume-control-container,
 audio::-webkit-media-controls-mute-button,
-audio::-webkit-media-controls-volume-slider {
+audio::-webkit-media-controls-overflow-button {
     display: none !important;
-    -webkit-appearance: none !important;
-}
-
-/* Ocultar botón de tres puntos (opciones) */
-audio::-webkit-media-controls-enclosure {
-    overflow: hidden !important;
-}
-
-audio::-webkit-media-controls-panel {
-    /* Ensanchamos el panel para empujar el botón de opciones fuera del área visible */
-    width: calc(100% + 35px); 
-    background-color: rgba(255, 202, 40, 0.1);
 }
 
 /* --- 9. RESPONSIVE --- */
