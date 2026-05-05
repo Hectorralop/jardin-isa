@@ -7,6 +7,8 @@ const CLOUDINARY_URL = "https://api.cloudinary.com/v1_1/dg1n8hjqd/video/upload";
 const CLOUDINARY_PRESET = "jardin_audios";
 
 let mediaRecorder, audioChunks = [], timerInterval, segundos = 0;
+let currentStream = null; // Guardamos el stream para poder apagarlo
+
 const gardenFondo = document.getElementById('garden-fondo');
 const gardenFrente = document.getElementById('garden-frente');
 const btnRecord = document.getElementById('btn-record');
@@ -233,7 +235,7 @@ async function enviarMensaje() {
     cargarChat();
 }
 
-// --- 6. LÓGICA DE GRABACIÓN TIPO WHATSAPP ---
+// --- 6. LÓGICA DE GRABACIÓN (ESTILO WHATSAPP Y FIX VOLUMEN) ---
 
 function iniciarContador() {
     segundos = 0;
@@ -252,12 +254,22 @@ function iniciarContador() {
 
 async function iniciarGrabacion() {
     try {
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        mediaRecorder = new MediaRecorder(stream);
+        // Pedimos el stream de audio
+        currentStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        mediaRecorder = new MediaRecorder(currentStream);
         audioChunks = [];
         
         mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
-        mediaRecorder.onstop = subirAudio;
+        
+        // Al terminar la grabación...
+        mediaRecorder.onstop = () => {
+            subirAudio();
+            // FIX: Apaga el hardware del micrófono para liberar el modo "Llamada"
+            if (currentStream) {
+                currentStream.getTracks().forEach(track => track.stop());
+                currentStream = null;
+            }
+        };
         
         iniciarContador();
         mediaRecorder.start();
@@ -269,7 +281,7 @@ async function iniciarGrabacion() {
 
 function detenerGrabacion() {
     if (mediaRecorder?.state === 'recording') {
-        mediaRecorder.stop();
+        mediaRecorder.stop(); // Esto dispara automáticamente el onstop de arriba
         btnRecord.classList.remove('grabando');
         clearInterval(timerInterval);
         if (timerDisplay) timerDisplay.style.display = 'none';
@@ -301,11 +313,11 @@ async function subirAudio() {
 
 // ASIGNACIÓN DE EVENTOS (Móvil + PC)
 if (btnRecord) {
-    // Eventos Mouse (PC)
+    // Mouse (PC)
     btnRecord.addEventListener('mousedown', iniciarGrabacion);
     btnRecord.addEventListener('mouseup', detenerGrabacion);
     
-    // Eventos Touch (Móvil)
+    // Touch (Móvil) con prevención de gestos del sistema
     btnRecord.addEventListener('touchstart', (e) => {
         e.preventDefault(); 
         iniciarGrabacion();
