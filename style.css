@@ -245,28 +245,40 @@ body {
 }
 
 .burbuja { 
-    padding: 12px 16px; 
-    border-radius: 20px; 
+    padding: 10px 14px; 
+    border-radius: 18px; 
     font-size: 0.95rem; 
     max-width: 85%; 
-    min-width: 60px; 
+    min-width: 40px; 
     word-wrap: break-word;
     display: flex;
     align-items: center;
-    overflow: hidden !important; 
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
 }
 
-.burbuja.el { align-self: flex-end; background: #ffca28; color: #000; box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
-.burbuja.ella { align-self: flex-start; background: rgba(255, 255, 255, 0.2); color: #fff; }
+.burbuja.el { 
+    align-self: flex-end; 
+    background: linear-gradient(135deg, #ffca28 0%, #ffb300 100%); 
+    color: #000; 
+    font-weight: 500;
+}
+
+.burbuja.ella { 
+    align-self: flex-start; 
+    background: rgba(255, 255, 255, 0.1); 
+    color: #fff; 
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
 
 /* --- 7. CONTROLES Y AUDIO --- */
 .input-area { 
     display: flex; 
     align-items: center;
     gap: 8px; 
-    background: rgba(255, 255, 255, 0.1); 
-    padding: 10px; 
+    background: rgba(255, 255, 255, 0.05); 
+    padding: 8px 12px; 
     border-radius: 30px; 
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 #nuevo-mensaje { 
@@ -275,81 +287,58 @@ body {
     border: none; 
     color: white; 
     outline: none; 
-    min-width: 0;
+    font-size: 0.95rem;
 }
 
 .btn-send, .btn-audio { 
     background: #ffca28; 
     border: none; 
-    width: 42px; 
-    height: 42px;
-    min-width: 42px;
+    width: 38px; 
+    height: 38px;
     border-radius: 50%; 
     cursor: pointer;
     display: flex;
     justify-content: center;
     align-items: center;
-    flex-shrink: 0;
-    transition: transform 0.2s, background-color 0.3s;
-    touch-action: none;
-    user-select: none;
+    transition: all 0.3s ease;
 }
 
-/* Estado de Grabación */
-#timer-grabacion {
-    color: #ff5252;
-    font-weight: bold;
-    font-family: 'Courier New', Courier, monospace;
-    margin-right: 4px;
-    font-size: 0.9rem;
-    white-space: nowrap;
+.btn-send:hover, .btn-audio:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 10px rgba(255, 202, 40, 0.4);
 }
 
-.btn-audio.grabando {
-    background: #ff5252 !important;
-    color: white !important;
-    transform: scale(1.1);
-    animation: pulsoGraba 1.2s infinite ease-in-out;
-}
-
-@keyframes pulsoGraba {
-    0%, 100% { transform: scale(1.1); box-shadow: 0 0 0 0 rgba(255, 82, 82, 0.7); }
-    50% { transform: scale(1.25); box-shadow: 0 0 0 10px rgba(255, 82, 82, 0); }
-}
-
-/* --- 8. REPRODUCTOR CORREGIDO (AMARILLO #FFCA28) --- */
-
-audio::-webkit-media-controls-mute-button,
-audio::-webkit-media-controls-volume-slider {
-    display: none !important;
-}
+/* --- 8. REPRODUCTOR REFINADO Y ELEGANTE --- */
 
 audio {
-    width: 100%;
-    min-width: 175px; 
-    max-width: 230px;
-    height: 40px;
-    border-radius: 20px;
-    display: block;
-    margin: 4px 0; 
-    
-    /* ELIMINAMOS EL INVERT(100%) QUE CAUSABA EL NEGRO */
-    /* Usamos brillo extremo y luego sepia para teñir sobre blanco */
-    filter: brightness(5) sepia(1) saturate(10000%) hue-rotate(-15deg);
-    
-    /* Recorte de 40px para quitar los tres puntos */
-    clip-path: inset(0 40px 0 0 round 20px);
-    
-    /* Centrado visual */
-    transform: translateX(12px);
-    background: transparent; /* Asegura que no haya fondo sólido */
+    width: 210px;
+    height: 36px;
+    border-radius: 18px;
+    /* Efecto cristal translúcido */
+    background-color: rgba(255, 202, 40, 0.15); 
+    /* Filtro para suavizar y dar color ámbar a los iconos */
+    filter: sepia(100%) saturate(300%) brightness(1.1) hue-rotate(-10deg);
+    transition: all 0.3s ease;
+}
+
+/* Quitamos los botones que estorban */
+audio::-webkit-media-controls-mute-button,
+audio::-webkit-media-controls-volume-slider,
+audio::-webkit-media-controls-timeline-container {
+    background-color: transparent;
+}
+
+/* Escondemos los tres puntos de opciones de Chrome */
+audio::-webkit-media-controls-enclosure {
+    padding: 0 10px;
+}
+
+audio::-webkit-media-controls-panel {
+    background-color: rgba(255, 202, 40, 0.2);
 }
 
 /* --- 9. RESPONSIVE --- */
 @media (max-width: 600px) {
     .titulo { font-size: 1.3rem; }
-    .flower-img { max-height: none !important; max-width: 140px !important; }
     .chat-container { width: 95%; bottom: 10px; }
-    .input-area { padding: 8px; gap: 5px; }
-    .btn-send, .btn-audio { width: 38px; height: 38px; min-width: 38px; }
 }
