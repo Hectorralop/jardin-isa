@@ -306,35 +306,38 @@ body {
     50% { transform: scale(1.25); box-shadow: 0 0 0 10px rgba(255, 82, 82, 0); }
 }
 
-/* --- 8. REPRODUCTOR DE AUDIO LIMPIO (REPARADO) --- */
+/* --- 8. REPRODUCTOR DE AUDIO LIMPIO (CONTROL TOTAL - SIN PUNTOS) --- */
 
-/* 1. Quitamos el botón de silencio/volumen */
-audio::-webkit-media-controls-mute-button {
-    display: none !important;
-}
-
+/* Ocultamos los botones nativos de volumen y silencio */
+audio::-webkit-media-controls-mute-button,
 audio::-webkit-media-controls-volume-slider {
     display: none !important;
 }
 
-/* 2. NUEVO: Quitamos el menú de los tres puntos (velocidad y otros) */
-audio::-webkit-media-controls-enclosure {
-    overflow: hidden !important;
-}
-
-audio::-webkit-media-controls-panel {
-    width: calc(100% + 30px); /* Desplaza el menú fuera del área visible */
-}
-
+/* Aplicamos el recorte quirúrgico para eliminar el menú de la derecha */
 audio {
     width: 100%;
-    min-width: 160px;
-    max-width: 220px;
+    min-width: 170px; /* Un poco más ancho para que no se vea apretado */
+    max-width: 230px;
     height: 40px;
     border-radius: 20px;
     display: block;
     margin: 5px 0;
     filter: sepia(20%) saturate(70%) hue-rotate(340deg);
+    
+    /* 1. Recortamos los últimos 40 píxeles de la derecha (donde están los puntos) */
+    clip-path: inset(0 40px 0 0 round 20px);
+    
+    /* 2. Empujamos el reproductor un poco a la derecha para centrar el Play */
+    transform: translateX(12px);
+}
+
+/* Ajuste necesario en la burbuja para que el recorte funcione bien */
+.burbuja {
+    overflow: hidden !important; /* Evita que el pedazo recortado cause problemas */
+    display: flex;
+    align-items: center;
+    padding: 8px 12px;
 }
 /* --- 9. RESPONSIVE --- */
 @media (max-width: 600px) {
