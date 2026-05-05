@@ -2,22 +2,24 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <!-- Meta optimizado para evitar zoom involuntario en móviles al escribir -->
+    <!-- Meta optimizado para evitar zoom involuntario y asegurar estabilidad en móviles -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Para ti ❤️</title>
+    <!-- Icono de la pestaña -->
     <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/833/833472.png">
-    <link rel="stylesheet" href="style.css?v=3">
-    <!-- Importamos FontAwesome por si decides usar iconos más finos después -->
+    <!-- Enlace al CSS con versionamiento para evitar caché -->
+    <link rel="stylesheet" href="style.css?v=4">
+    <!-- FontAwesome para iconos profesionales -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
 
-<!-- Capa de entrada -->
+<!-- Capa de entrada (Bloqueo inicial) -->
 <div id="overlay">
     <button onclick="iniciarRegalo()">Abrir</button>
 </div>
 
-<!-- Capas del Jardín -->
+<!-- Capas del Jardín (Fondo y Frente) -->
 <div id="garden-fondo" class="garden"></div>
 <div id="garden-frente" class="garden"></div>
 
@@ -27,34 +29,35 @@
     <span id="corazon-secreto" onclick="revelarChat()">❤️</span>
 </div>
 
-<!-- Contenedor del Poema -->
+<!-- Contenedor del Poema (Mensaje Diario de Airtable) -->
 <div class="poema">
     <div id="texto-poema"></div>
 </div>
 
-<!-- Interfaz del Chat -->
+<!-- Interfaz del Chat (Oculta por defecto) -->
 <div class="chat-container">
     <div class="chat-header">
         Nuestro Rincón ✨
-        <span class="cerrar-chat" onclick="cerrarChat()" style="cursor:pointer;">×</span>
+        <span class="cerrar-chat" onclick="cerrarChat()">×</span>
     </div>
     
+    <!-- Historial de mensajes y audios -->
     <div id="historial-chat"></div>
 
+    <!-- Área de entrada optimizada para grabación tipo WhatsApp -->
     <div class="input-area">
-        <!-- Input de texto principal -->
         <input type="text" id="nuevo-mensaje" placeholder="Escribe algo..." 
                onkeypress="if(event.key === 'Enter') enviarMensaje()">
         
-        <!-- CRONÓMETRO: Se activa mediante JS al grabar -->
+        <!-- El cronómetro aparece justo antes del micro para no deformar el layout -->
         <span id="timer-grabacion" style="display:none;">00:00</span>
         
-        <!-- Botón de Micrófono (ahora con ID para el JS) -->
+        <!-- Botón de Micrófono con eventos táctiles controlados por JS -->
         <button id="btn-record" class="btn-audio">
             <i class="fas fa-microphone"></i>
         </button> 
         
-        <!-- Botón de Enviar -->
+        <!-- Botón de Enviar (Icono de avión de papel) -->
         <button onclick="enviarMensaje()" class="btn-send">
             <svg viewBox="0 0 24 24" style="width:18px; fill:currentColor;">
                 <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"></path>
@@ -63,11 +66,12 @@
     </div>
 </div>
 
-<!-- Elementos Multimedia -->
+<!-- Elementos Multimedia (Música de fondo) -->
 <audio id="musica" loop>
     <source src="cancion.mp3" type="audio/mpeg">
 </audio>
 
+<!-- Lógica principal -->
 <script src="script.js"></script>
 </body>
 </html>
