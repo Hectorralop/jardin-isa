@@ -334,8 +334,8 @@ audio {
     display: block;
     margin: 4px 0; 
     
-    /* FILTRO PARA QUITAR EL BLANCO Y ADAPTAR AL TEMA OSCURO */
-    filter: invert(100%) hue-rotate(180deg) brightness(1.4) saturate(300%) sepia(100%) hue-rotate(30deg);
+    /* FILTRO MEJORADO PARA EVITAR EL NEGRO TOTAL Y QUE SE VEA CLARO */
+    filter: invert(90%) brightness(2.2) contrast(1.1) sepia(100%) hue-rotate(30deg) saturate(200%);
     
     /* Recorte de 40px a la derecha para quitar los puntos */
     clip-path: inset(0 40px 0 0 round 20px);
