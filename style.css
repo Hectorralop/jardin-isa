@@ -248,7 +248,7 @@ body {
 .burbuja.el { align-self: flex-end; background: #ffca28; color: #000; }
 .burbuja.ella { align-self: flex-start; background: rgba(255, 255, 255, 0.2); color: #fff; }
 
-/* --- 7. CONTROLES Y AUDIO (OPTIMIZADO MÓVIL) --- */
+/* --- 7. CONTROLES Y AUDIO --- */
 .input-area { 
     display: flex; 
     align-items: center;
@@ -264,7 +264,7 @@ body {
     border: none; 
     color: white; 
     outline: none; 
-    min-width: 0; /* Permite que el input se encoja si es necesario */
+    min-width: 0;
 }
 
 .btn-send, .btn-audio { 
@@ -272,15 +272,15 @@ body {
     border: none; 
     width: 42px; 
     height: 42px;
-    min-width: 42px; /* Bloquea el tamaño en móviles */
+    min-width: 42px;
     border-radius: 50%; 
     cursor: pointer;
     display: flex;
     justify-content: center;
     align-items: center;
-    flex-shrink: 0; /* Evita deformaciones */
+    flex-shrink: 0;
     transition: transform 0.2s, background-color 0.3s;
-    touch-action: none; /* Vital para que el móvil no interrumpa la grabación */
+    touch-action: none;
     user-select: none;
 }
 
@@ -306,7 +306,24 @@ body {
     50% { transform: scale(1.25); box-shadow: 0 0 0 10px rgba(255, 82, 82, 0); }
 }
 
-/* --- 8. RESPONSIVE --- */
+/* --- 8. REPRODUCTOR DE AUDIO LIMPIO (NUEVO) --- */
+audio::-webkit-media-controls-mute-button {
+    display: none !important;
+}
+
+audio::-webkit-media-controls-volume-slider {
+    display: none !important;
+}
+
+audio {
+    width: 100%;
+    max-width: 210px;
+    height: 35px;
+    border-radius: 20px;
+    filter: sepia(20%) saturate(70%) hue-rotate(340deg);
+}
+
+/* --- 9. RESPONSIVE --- */
 @media (max-width: 600px) {
     .titulo { font-size: 1.3rem; }
     .flower-img { max-height: none !important; max-width: 140px !important; }
