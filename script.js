@@ -51,26 +51,28 @@ function construirRamo() {
 
     const fragmento = document.createDocumentFragment();
     
-    // CAPA 1: FONDO (Lirios y Campanulas)
-    crearFlorImagen(fragmento, floresInfo[1], 12, 60, 0.5, -12, 5, '2vh');  
-    crearFlorImagen(fragmento, floresInfo[2], 88, 70, 0.8, 12, 5, '2vh');   
+    // CAPA 1: FONDO (Lirios y Campanulas laterales)
+    crearFlorImagen(fragmento, floresInfo[1], 12, 75, 0.5, -12, 5, '2vh');  
+    crearFlorImagen(fragmento, floresInfo[2], 88, 85, 0.8, 12, 5, '2vh');   
     
-    // CAPA 2: CORAZÓN
+    // CAPA 2: CORAZÓN DE PARTÍCULAS
     crearEnjambreCorazon(fragmento);
 
-    // CAPA 3: CENTRAL (Ajuste de la "Reina" y sus escoltas)
-    // Bajamos la central de 150 a 110 para que no se vea "estirada"
-    crearFlorImagen(fragmento, floresInfo[0], 35, 45, 0.4, -6, 10, '5vh'); 
-    crearFlorImagen(fragmento, floresInfo[0], 65, 65, 0.7, 6, 10, '5vh');    
-    crearFlorImagen(fragmento, floresInfo[0], 50, 110, 0, 0, 15, '6vh'); // LA REINA (Bajada)
+    // CAPA 3: CENTRAL (Escalonamiento de Flores Amarillas)
+    // Amarilla lateral izquierda
+    crearFlorImagen(fragmento, floresInfo[0], 32, 55, 0.4, -8, 10, '5vh'); 
+    // Amarilla lateral derecha
+    crearFlorImagen(fragmento, floresInfo[0], 68, 70, 0.7, 8, 10, '5vh');    
+    // LA REINA: Altura reducida a 85 para que no atraviese el corazón
+    crearFlorImagen(fragmento, floresInfo[0], 50, 85, 0, 0, 15, '6vh'); 
 
     // CAPA 4: FRENTE (Amapolas Rojas)
     const configAmapolas = [
-        {pos: 15, alt: 10, ang: -5},
-        {pos: 35, alt: 25, ang: 3},
-        {pos: 50, alt: 15, ang: 0},
-        {pos: 65, alt: 20, ang: -2},
-        {pos: 85, alt: 12, ang: 5}
+        {pos: 15, alt: 15, ang: -5},
+        {pos: 35, alt: 30, ang: 3},
+        {pos: 50, alt: 20, ang: 0},
+        {pos: 65, alt: 25, ang: -2},
+        {pos: 85, alt: 18, ang: 5}
     ];
 
     configAmapolas.forEach((amapola, i) => {
