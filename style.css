@@ -244,7 +244,7 @@ body {
     padding: 5px;
 }
 
-.burbuja { padding: 10px 14px; border-radius: 18px; font-size: 0.9rem; max-width: 80%; }
+.burbuja { padding: 10px 14px; border-radius: 18px; font-size: 0.9rem; max-width: 80%; min-width: 60px; word-wrap: break-word; }
 .burbuja.el { align-self: flex-end; background: #ffca28; color: #000; }
 .burbuja.ella { align-self: flex-start; background: rgba(255, 255, 255, 0.2); color: #fff; }
 
@@ -306,7 +306,7 @@ body {
     50% { transform: scale(1.25); box-shadow: 0 0 0 10px rgba(255, 82, 82, 0); }
 }
 
-/* --- 8. REPRODUCTOR DE AUDIO LIMPIO (NUEVO) --- */
+/* --- 8. REPRODUCTOR DE AUDIO LIMPIO (REPARADO) --- */
 audio::-webkit-media-controls-mute-button {
     display: none !important;
 }
@@ -317,9 +317,12 @@ audio::-webkit-media-controls-volume-slider {
 
 audio {
     width: 100%;
-    max-width: 210px;
-    height: 35px;
+    min-width: 160px; /* Evita el colapso que se ve en la captura */
+    max-width: 220px;
+    height: 40px;
     border-radius: 20px;
+    display: block;
+    margin: 5px 0;
     filter: sepia(20%) saturate(70%) hue-rotate(340deg);
 }
 
