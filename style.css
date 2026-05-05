@@ -317,7 +317,7 @@ body {
     50% { transform: scale(1.25); box-shadow: 0 0 0 10px rgba(255, 82, 82, 0); }
 }
 
-/* --- 8. REPRODUCTOR CALIBRADO AL COLOR #ffca28 --- */
+/* --- 8. REPRODUCTOR CORREGIDO (AMARILLO #FFCA28) --- */
 
 audio::-webkit-media-controls-mute-button,
 audio::-webkit-media-controls-volume-slider {
@@ -333,19 +333,16 @@ audio {
     display: block;
     margin: 4px 0; 
     
-    /* FILTRO CALIBRADO: 
-       1. Invertimos para volverlo oscuro.
-       2. Hue-rotate 180 para ajustar la base.
-       3. Sepia 100% y Saturate 500% para forzar el color cálido.
-       4. Hue-rotate final para llegar al amarillo #ffca28. 
-    */
-    filter: invert(100%) hue-rotate(180deg) brightness(1.5) contrast(1.2) sepia(100%) saturate(500%) hue-rotate(-15deg);
+    /* ELIMINAMOS EL INVERT(100%) QUE CAUSABA EL NEGRO */
+    /* Usamos brillo extremo y luego sepia para teñir sobre blanco */
+    filter: brightness(5) sepia(1) saturate(10000%) hue-rotate(-15deg);
     
-    /* Recorte de 40px para quitar los puntos */
+    /* Recorte de 40px para quitar los tres puntos */
     clip-path: inset(0 40px 0 0 round 20px);
     
     /* Centrado visual */
     transform: translateX(12px);
+    background: transparent; /* Asegura que no haya fondo sólido */
 }
 
 /* --- 9. RESPONSIVE --- */
