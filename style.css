@@ -235,17 +235,28 @@ body {
 .chat-container.mostrar { display: block; opacity: 1; }
 
 #historial-chat {
-    max-height: 35vh;
+    max-height: 40vh;
     overflow-y: auto;
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 16px; /* Aumentado para separar mensajes */
     margin-bottom: 15px;
-    padding: 5px;
+    padding: 10px;
 }
 
-.burbuja { padding: 10px 14px; border-radius: 18px; font-size: 0.9rem; max-width: 80%; min-width: 60px; word-wrap: break-word; }
-.burbuja.el { align-self: flex-end; background: #ffca28; color: #000; }
+.burbuja { 
+    padding: 12px 16px; /* Más aire interno para que no se vea delgado */
+    border-radius: 20px; 
+    font-size: 0.95rem; 
+    max-width: 85%; 
+    min-width: 60px; 
+    word-wrap: break-word;
+    display: flex;
+    align-items: center;
+    overflow: hidden !important; 
+}
+
+.burbuja.el { align-self: flex-end; background: #ffca28; color: #000; box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
 .burbuja.ella { align-self: flex-start; background: rgba(255, 255, 255, 0.2); color: #fff; }
 
 /* --- 7. CONTROLES Y AUDIO --- */
@@ -317,28 +328,21 @@ audio::-webkit-media-controls-volume-slider {
 /* Aplicamos el recorte quirúrgico para eliminar el menú de la derecha */
 audio {
     width: 100%;
-    min-width: 170px; /* Un poco más ancho para que no se vea apretado */
+    min-width: 175px; 
     max-width: 230px;
     height: 40px;
     border-radius: 20px;
     display: block;
-    margin: 5px 0;
+    margin: 4px 0; 
     filter: sepia(20%) saturate(70%) hue-rotate(340deg);
     
-    /* 1. Recortamos los últimos 40 píxeles de la derecha (donde están los puntos) */
+    /* Recorte de 40px a la derecha para quitar los puntos */
     clip-path: inset(0 40px 0 0 round 20px);
     
-    /* 2. Empujamos el reproductor un poco a la derecha para centrar el Play */
+    /* Centrado visual compensando el recorte */
     transform: translateX(12px);
 }
 
-/* Ajuste necesario en la burbuja para que el recorte funcione bien */
-.burbuja {
-    overflow: hidden !important; /* Evita que el pedazo recortado cause problemas */
-    display: flex;
-    align-items: center;
-    padding: 8px 12px;
-}
 /* --- 9. RESPONSIVE --- */
 @media (max-width: 600px) {
     .titulo { font-size: 1.3rem; }
