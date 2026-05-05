@@ -49,16 +49,17 @@ body {
 /* --- 3. FLORES Y DINÁMICOS (CORREGIDO) --- */
 .flower-img {
     position: absolute;
-    /* Dejamos que el JS controle width y height mediante el estilo en línea */
+    /* El JS controla height; width: auto mantiene la proporción */
+    width: auto;
+    object-fit: contain;
     transform-origin: bottom center;
     transform: translateX(-50%); 
     animation: sway 4s ease-in-out infinite alternate;
     opacity: 0;
-    /* Transición suave para posición y aparición */
+    /* Transición suave para cambios de altura y aparición */
     transition: opacity 2s ease-in-out, bottom 1.5s ease-out, height 1.5s ease-out; 
     user-select: none;
     pointer-events: none;
-    /* Mejora de visualización */
     filter: drop-shadow(0 5px 10px rgba(0,0,0,0.3));
 }
 
@@ -76,7 +77,7 @@ body {
 .enjambre-wrapper {
     position: absolute;
     left: 50%;
-    bottom: 55vh; /* Subimos de 50vh a 55vh */
+    bottom: 55vh; 
     z-index: 12;
     transform: translateX(-50%);
 }
@@ -278,9 +279,9 @@ body {
         font-size: 1.3rem; 
     }
     .flower-img { 
-        /* Permitimos que el JS mande sobre el tamaño total */
+        /* Eliminamos max-height para que el JS decida la altura real */
         max-height: none !important; 
-        /* Ajustamos un poco el ancho para que no se amontonen en pantallas chicas */
-        max-width: 50vw !important;
+        /* Ponemos un límite de ancho para evitar que se deformen */
+        max-width: 140px !important;
     }
 }
