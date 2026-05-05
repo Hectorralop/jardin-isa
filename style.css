@@ -286,40 +286,39 @@ body {
     }
 }
 
-/* --- 9. ANIMACIÓN CORAZÓN SECRETO --- */
+/* --- 9. EFECTO DE LATIDO Y BRILLO (FORZADO) --- */
+
 #corazon-secreto {
-    display: inline-block;
-    cursor: pointer;
-    /* Activa la interactividad ya que el padre .titulo tiene z-index alto */
-    pointer-events: auto; 
-    transition: transform 0.3s ease;
-    /* Brillo base tenue */
-    filter: drop-shadow(0 0 5px rgba(255, 50, 50, 0.4));
-    animation: latidoInteractivo 2.5s infinite ease-in-out;
+    display: inline-block !important;
+    cursor: pointer !important;
+    pointer-events: auto !important; /* Esto permite que el clic funcione */
+    position: relative;
+    z-index: 999; /* Lo pone por encima de todo */
+    
+    /* Animación de latido */
+    animation: latidoMagico 2.5s infinite ease-in-out !important;
+    
+    /* Resplandor rojo inicial */
+    filter: drop-shadow(0 0 8px rgba(255, 0, 0, 0.8)) !important;
+    transition: all 0.3s ease;
 }
 
-#corazon-secreto:hover {
-    transform: scale(1.2) rotate(5deg);
-    filter: drop-shadow(0 0 15px rgba(255, 50, 50, 0.8));
-}
-
-@keyframes latidoInteractivo {
+@keyframes latidoMagico {
     0%, 100% {
         transform: scale(1);
-        filter: drop-shadow(0 0 5px rgba(255, 50, 50, 0.5)) brightness(1);
+        filter: drop-shadow(0 0 5px rgba(255, 0, 0, 0.6)) brightness(1);
     }
     50% {
-        transform: scale(1.15);
-        /* El brillo aumenta en el centro de la animación */
-        filter: drop-shadow(0 0 20px rgba(255, 80, 80, 0.9)) brightness(1.3);
+        transform: scale(1.3); /* Crece un 30% */
+        filter: drop-shadow(0 0 20px rgba(255, 50, 50, 1)) brightness(1.5);
     }
 }
 
-/* Ajuste necesario para que el clic funcione correctamente */
+/* Forzar que el contenedor no bloquee el clic */
 .titulo {
-    pointer-events: none; /* Evita que el contenedor bloquee el fondo */
+    pointer-events: none !important;
 }
 
-.titulo .nombre, #corazon-secreto {
-    pointer-events: auto; /* Reactiva el clic solo en los elementos importantes */
+.titulo span, .titulo #corazon-secreto {
+    pointer-events: auto !important;
 }
