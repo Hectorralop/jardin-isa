@@ -285,3 +285,41 @@ body {
         max-width: 140px !important;
     }
 }
+
+/* --- 9. ANIMACIÓN CORAZÓN SECRETO --- */
+#corazon-secreto {
+    display: inline-block;
+    cursor: pointer;
+    /* Activa la interactividad ya que el padre .titulo tiene z-index alto */
+    pointer-events: auto; 
+    transition: transform 0.3s ease;
+    /* Brillo base tenue */
+    filter: drop-shadow(0 0 5px rgba(255, 50, 50, 0.4));
+    animation: latidoInteractivo 2.5s infinite ease-in-out;
+}
+
+#corazon-secreto:hover {
+    transform: scale(1.2) rotate(5deg);
+    filter: drop-shadow(0 0 15px rgba(255, 50, 50, 0.8));
+}
+
+@keyframes latidoInteractivo {
+    0%, 100% {
+        transform: scale(1);
+        filter: drop-shadow(0 0 5px rgba(255, 50, 50, 0.5)) brightness(1);
+    }
+    50% {
+        transform: scale(1.15);
+        /* El brillo aumenta en el centro de la animación */
+        filter: drop-shadow(0 0 20px rgba(255, 80, 80, 0.9)) brightness(1.3);
+    }
+}
+
+/* Ajuste necesario para que el clic funcione correctamente */
+.titulo {
+    pointer-events: none; /* Evita que el contenedor bloquee el fondo */
+}
+
+.titulo .nombre, #corazon-secreto {
+    pointer-events: auto; /* Reactiva el clic solo en los elementos importantes */
+}
