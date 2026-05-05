@@ -172,7 +172,10 @@ async function cargarChat() {
             div.className = `burbuja ${reg.fields.Nombre === "El" ? "el" : "ella"}`;
             if (reg.fields.AudioUrl) {
                 const audio = document.createElement('audio');
-                audio.src = reg.fields.AudioUrl; audio.controls = true;
+                audio.src = reg.fields.AudioUrl; 
+                audio.controls = true;
+                // Cambio solicitado: Quitar menú de descarga y limpiar controles
+                audio.controlsList = "nodownload"; 
                 div.appendChild(audio);
             } else { div.innerText = reg.fields.Mensaje; }
             historial.appendChild(div);
@@ -207,7 +210,7 @@ async function enviarMensaje() {
     cargarChat();
 }
 
-// --- 6. LÓGICA DE GRABACIÓN (SOLUCIÓN DEFINITIVA VOLUMEN) ---
+// --- 6. LÓGICA DE GRABACIÓN ---
 
 function iniciarContador() {
     segundos = 0;
@@ -242,7 +245,7 @@ function detenerGrabacion() {
     }
     if (currentStream) {
         currentStream.getTracks().forEach(track => {
-            track.stop(); // Apaga hardware
+            track.stop(); 
             track.enabled = false; 
         });
         currentStream = null;
